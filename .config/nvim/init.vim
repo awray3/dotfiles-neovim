@@ -1,3 +1,4 @@
+let g:python3_host_prog="~/.config/nvim/.venv/bin/python"
 source ~/.config/nvim/plugins.vim
 
 " ============================================================================ "
@@ -98,7 +99,6 @@ nnoremap <leader>o <Cmd>only<CR>
 " ===                                 MISC.                                === "
 " ============================================================================ "
 
-let g:python3_host_prog='~/.config/nvim/.venv/bin/python'
 let g:signify_sign_delete = '-'
 
 " Set backups
@@ -117,14 +117,21 @@ set noswapfile
 " ============================================================================ "
 
 source $NEOHOME/vimscript/float.vim
-source ~/.vim/plugin/argtextobj.vim
-source ~/.vim/ftdetect/xonsh.vim
+
+function SourceIfExists(file)
+  if filereadable(expand(a:file))
+    source expand(a:file)
+  endif
+endfunction
+
+call SourceIfExists("~/.vim/plugin/argtextobj.vim")
+call SourceIfExists("~/.vim/ftdetect/xonsh.vim")
 set runtimepath^=~/.vim
 
 lua << EOF
 require("lsp")
 require("tele-scope")
-require("sitter")
+--require("sitter")
 require("completion")
 require("tree")
 require("line")

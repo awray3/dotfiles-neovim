@@ -67,5 +67,6 @@ Plug("jpalardy/vim-slime")
 Plug("rktjmp/lush.nvim")
 Plug("navarasu/onedark.nvim")
 Plug("ellisonleao/gruvbox.nvim")
+Plug("sainnhe/everforest")
 
 vim.call("plug#end")
