@@ -1,5 +1,4 @@
 --local onedark = require('onedark')
--- onedark theme config
 --onedark.setup(
   --{
     --style='deep',
@@ -21,6 +20,11 @@
 --colorscheme catppuccino
 --colorscheme onedark
 --colorscheme gruvbox
+
 vim.cmd([[
+=======
+  let g:everforest_background = 'soft'
+  let g:everforest_better_performance = 1
+  set background=dark
   colorscheme everforest
 ]])
