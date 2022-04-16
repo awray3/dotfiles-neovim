@@ -20,6 +20,4 @@ vim.api.nvim_set_keymap(
 
 tele.setup({})
 
--- tele.load_extension("fzf")
-tele.load_extension("heading")
-tele.load_extension("project")
+tele.load_extension("fzf")

@@ -118,20 +118,19 @@ set noswapfile
 
 source $NEOHOME/vimscript/float.vim
 
-function SourceIfExists(file)
-  if filereadable(expand(a:file))
-    source expand(a:file)
-  endif
-endfunction
+"function SourceIfExists(file)
+  "if filereadable(expand(a:file))
+    "source expand(a:file)
+  "endif
+"endfunction
 
-call SourceIfExists("~/.vim/plugin/argtextobj.vim")
-call SourceIfExists("~/.vim/ftdetect/xonsh.vim")
-set runtimepath^=~/.vim
+"call SourceIfExists("~/.vim/ftdetect/xonsh.vim")
+"set runtimepath^=~/.vim
 
 lua << EOF
 require("lsp")
 require("tele-scope")
---require("sitter")
+require("sitter")
 require("completion")
 require("tree")
 require("line")

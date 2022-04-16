@@ -1,8 +1,8 @@
 -- Sets up LSP Config Plugin
 local common = require("common")
-local lspformat = require("lsp-format")
+--local lspformat = require("lsp-format")
 
-lspformat.setup {}
+--lspformat.setup {}
 
 local function diagnostic_config()
 	vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
@@ -25,7 +25,7 @@ local M = {}
 M.on_attach = function(client)
 	diagnostic_config()
 	define_signs()
-  lspformat.on_attach(client)
+        --lspformat.on_attach(client)
 
 	-- Mappings.
 	local opts = { noremap = true, silent = true }
