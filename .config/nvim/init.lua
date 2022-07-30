@@ -13,7 +13,6 @@ require('packer').startup(function(use)
   use 'wbthomason/packer.nvim' -- Package manager
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
-  use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
@@ -42,6 +41,13 @@ require('packer').startup(function(use)
   }
   use "knubie/vim-kitty-navigator"
   use 'williamboman/nvim-lsp-installer'
+  use {
+    'kyazdani42/nvim-tree.lua',
+    requires = {
+      'kyazdani42/nvim-web-devicons', -- optional, for file icons
+    },
+    tag = 'nightly' -- optional, updated every week. (see issue #1193)
+  }
 end)
 
 
@@ -114,7 +120,7 @@ function FKeyBinding(file, Fkey)
 end
 
 -- maps the F keys to key config files
-FKeyBinding("$NEOHOME/init.lua", "<F1>")
+FKeyBinding("$HOME/.config/nvim/init.lua", "<F1>")
 FKeyBinding("$HOME/.zshrc", "<F2>")
 FKeyBinding("$HOME/.config/kitty/kitty.conf", "<F3>")
 FKeyBinding("$HOME/.config/starship.toml", "<F4>")
@@ -184,4 +190,5 @@ set noswapfile
 require("lsp")
 require("tele-scope")
 require("sitter")
+require("tree")
 
