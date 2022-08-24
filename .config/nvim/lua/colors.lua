@@ -21,9 +21,16 @@
 --colorscheme onedark
 --colorscheme gruvbox
 
+-- for everforest
 vim.cmd([[
   let g:everforest_background = 'soft'
   let g:everforest_better_performance = 1
+  let g:everforest_transparent_background = 2
   set background=dark
   colorscheme everforest
 ]])
+
+-- vim.cmd([[
+--   set background=dark
+--   colorscheme andromeda
+-- ]])
