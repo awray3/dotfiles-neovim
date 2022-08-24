@@ -25,7 +25,6 @@ require('packer').startup(function(use)
         'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make'
     }
-    use {'renerocksai/telekasten.nvim'}
     use 'sainnhe/everforest'
     use 'safv12/andromeda.vim'
     use 'nvim-lualine/lualine.nvim' -- Fancier statusline
@@ -73,6 +72,7 @@ require('packer').startup(function(use)
         end,
         ft = {"markdown"}
     })
+    use({"vimwiki/vimwiki"})
 end)
 
 --          _   _   _                 
@@ -147,6 +147,7 @@ FKeyBinding("$HOME/.config/nvim/init.lua", "<F1>")
 FKeyBinding("$HOME/.zshrc", "<F2>")
 FKeyBinding("$HOME/.config/kitty/kitty.conf", "<F3>")
 FKeyBinding("$HOME/.config/starship.toml", "<F4>")
+FKeyBinding("$HOME/Documents/vimwiki", "<F5>")
 
 -- remap esc
 vim.keymap.set("i", "jk", "<ESC>")
