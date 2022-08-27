@@ -25,9 +25,14 @@ require('packer').startup(function(use)
         'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make'
     }
+    -- colorschemes
     use 'sainnhe/everforest'
     use 'safv12/andromeda.vim'
-    use 'nvim-lualine/lualine.nvim' -- Fancier statusline
+    use 'navarasu/onedark.nvim'
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+    }
     -- Add indentation guides even on blank lines
     use 'lukas-reineke/indent-blankline.nvim'
     -- Add git related info in the signs columns and popups
@@ -170,18 +175,39 @@ vim.keymap.set("n", "#", "<Cmd>Telescope grep_string<CR>")
 vim.keymap.set("n", "Y", "y$")
 
 -- insert the current date in long format
-vim.keymap.set("n", "<Leader>d", ":r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
+vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 
 --           _                
 --  ___ ___ | | ___  _ __ ___ 
 -- / __/ _ \| |/ _ \| '__/ __|
 -- | (_| (_) | | (_) | |  \__ \
 -- \___\___/|_|\___/|_|  |___/
---                            
-vim.g.everforest_background = 'soft'
-vim.g.everforest_better_performance = 1
-vim.opt.background = 'dark'
-vim.cmd [[colorscheme everforest]]
+
+-- For everforest
+-- vim.g.everforest_background = 'soft'
+-- vim.g.everforest_better_performance = 1
+-- vim.opt.background = 'dark'
+-- vim.cmd [[colorscheme everforest]]
+
+-- onedark
+local onedark = require('onedark')
+onedark.setup(
+  {
+    style='deep',
+    transparent=true,
+    ending_tildes=false,
+    code_style = {
+      comments = 'italic',
+      keywords = 'none',
+      functions = 'none',
+      strings = 'none', 
+      variables = 'none'
+    }
+  }
+)
+onedark.load()
+
+
 
 -- _ __ ___ (_)___  ___ 
 -- | '_ ` _ \| / __|/ __|
@@ -220,5 +246,5 @@ require("tele-scope")
 require("sitter")
 require("tree")
 require("notes")
-require("colors")
+require("line")
 
