@@ -1,4 +1,10 @@
--- setup packer
+--  _       _ _     _             
+-- (_)_ __ (_) |_  | |_   _  __ _ 
+-- | | '_ \| | __| | | | | |/ _` |
+-- | | | | | | |_ _| | |_| | (_| |
+-- |_|_| |_|_|\__(_)_|\__,_|\__,_|
+
+-- bootstrap and setup packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
@@ -14,9 +20,26 @@ vim.api.nvim_create_autocmd('BufWritePost', {
     pattern = 'init.lua'
 })
 
+--  ____  _             _           
+-- |  _ \| |_   _  __ _(_)_ __  ___ 
+-- | |_) | | | | |/ _` | | '_ \/ __|
+-- |  __/| | |_| | (_| | | | | \__ \
+-- |_|   |_|\__,_|\__, |_|_| |_|___/
+--                |___/             
+
 require('packer').startup(function(use)
     use 'wbthomason/packer.nvim' -- Package manager
-    -- UI to select things (files, grep results, open buffers...)
+                    
+    --   ___ ___  _ __ ___ 
+    --  / __/ _ \| '__/ _ \
+    -- | (_| (_) | | |  __/
+    --  \___\___/|_|  \___|
+                    
+
+    use 'nvim-treesitter/nvim-treesitter'
+    -- Additional textobjects for treesitter
+    use 'nvim-treesitter/nvim-treesitter-textobjects'
+
     use {
         'nvim-telescope/telescope.nvim',
         requires = {'nvim-lua/plenary.nvim'}
@@ -25,13 +48,124 @@ require('packer').startup(function(use)
         'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make'
     }
+    use "tpope/vim-surround"
+    use {
+        'kyazdani42/nvim-tree.lua',
+        requires = {'kyazdani42/nvim-web-devicons' -- optional, for file icons
+        },
+        tag = 'nightly' -- optional, updated every week. (see issue #1193)
+    }
+    use {
+        "preservim/nerdcommenter",
+        config = function()
+            vim.g.NERDCreateDefaultMappings = false
+            vim.keymap.set("n", "<C-_>", "<Plug>NERDCommenterToggle")
+            vim.keymap.set("v", "<C-_>", "<Plug>NERDCommenterToggle")
+        end
+    }
+    use "knubie/vim-kitty-navigator"
+
+    --  _     ____  ____  
+    -- | |   / ___||  _ \ 
+    -- | |   \___ \| |_) |
+    -- | |___ ___) |  __/ 
+    -- |_____|____/|_|    
+
+    use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
+    use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
+    use 'hrsh7th/cmp-nvim-lsp'
+    use 'williamboman/nvim-lsp-installer'
+
+    --  _   _ ___ 
+    -- | | | |_ _|
+    -- | | | || | 
+    -- | |_| || | 
+    --  \___/|___|
+            
+
     -- colorschemes
     use 'sainnhe/everforest'
     use 'safv12/andromeda.vim'
     use 'navarasu/onedark.nvim'
+
+    -- lines
     use {
         'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+        requires = {
+            'kyazdani42/nvim-web-devicons',
+            opt = true
+        },
+        config = function()
+            require("lualine").setup({
+                options = {
+                    icons_enabled = true,
+                    theme = "auto",
+                    component_separators = {
+                        left = "",
+                        right = ""
+                    },
+                    section_separators = {
+                        left = "",
+                        right = ""
+                    },
+                    disabled_filetypes = {},
+                    always_divide_middle = true
+                },
+                sections = {
+                    lualine_a = {"mode"},
+                    lualine_b = {"branch", "diff", {
+                        "diagnostics",
+                        sources = {"nvim_diagnostic"}
+                    }},
+                    lualine_c = {"filename"},
+                    lualine_x = {"filetype", "fileformat"},
+                    lualine_y = {"progress"},
+                    lualine_z = {"location"}
+                },
+                inactive_sections = {
+                    lualine_a = {},
+                    lualine_b = {},
+                    lualine_c = {"filename"},
+                    lualine_x = {"location"},
+                    lualine_y = {},
+                    lualine_z = {}
+                },
+                tabline = {},
+                extensions = {'nvim-tree'}
+            })
+        end
+    }
+    use {
+        'kdheepak/tabline.nvim',
+        config = function()
+            require'tabline'.setup {
+                -- Defaults configuration options
+                enable = true,
+                options = {
+                    -- If lualine is installed tabline will use separators configured in lualine by default.
+                    -- These options can be used to override those settings.
+                    max_bufferline_percent = 66, -- set to nil by default, and it uses vim.o.columns * 2/3
+                    show_tabs_always = false, -- this shows tabs only when there are more than one tab or if the first tab is named
+                    show_devicons = true, -- this shows devicons in buffer section
+                    show_bufnr = false, -- this appends [bufnr] to buffer section,
+                    show_filename_only = false, -- shows base filename only instead of relative path in filename
+                    modified_icon = "+ ", -- change the default modified icon
+                    modified_italic = false, -- set to true by default; this determines whether the filename turns italic if modified
+                    show_tabs_only = false -- this shows only tabs instead of tabs + buffers
+                }
+            }
+            vim.cmd [[
+            set guioptions-=e " Use showtabline in gui vim
+            set sessionoptions+=tabpages,globals " store tabpages and globals in session
+            ]]
+        end,
+        requires = {{
+            'nvim-lualine/lualine.nvim',
+            opt = true
+        }, {
+            'kyazdani42/nvim-web-devicons',
+            opt = true
+        }}
     }
     -- Add indentation guides even on blank lines
     use 'lukas-reineke/indent-blankline.nvim'
@@ -40,31 +174,13 @@ require('packer').startup(function(use)
         'lewis6991/gitsigns.nvim',
         requires = {'nvim-lua/plenary.nvim'}
     }
-    -- Highlight, edit, and navigate code using a fast incremental parsing library
-    use 'nvim-treesitter/nvim-treesitter'
-    -- Additional textobjects for treesitter
-    use 'nvim-treesitter/nvim-treesitter-textobjects'
-    use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-    use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
-    use 'hrsh7th/cmp-nvim-lsp'
-    use "tpope/vim-surround"
-    use {
-        "preservim/nerdcommenter",
-        config = function()
-            vim.g.NERDCreateDefaultMappings = false
-            vim.keymap.set("n", "<C-_>", "<Plug>NERDCommenterToggle")
-            vim.keymap.set("v", "<C-_>", "<Plug>NERDCommenterToggle")
-        end
 
-    }
-    use "knubie/vim-kitty-navigator"
-    use 'williamboman/nvim-lsp-installer'
-    use {
-        'kyazdani42/nvim-tree.lua',
-        requires = {'kyazdani42/nvim-web-devicons' -- optional, for file icons
-        },
-        tag = 'nightly' -- optional, updated every week. (see issue #1193)
-    }
+    --              _            
+    --  _ __   ___ | |_ ___  ___ 
+    -- | '_ \ / _ \| __/ _ \/ __|
+    -- | | | | (_) | ||  __/\__ \
+    -- |_| |_|\___/ \__\___||___/
+
     use({
         "quarto-dev/quarto-vim",
         requires = {{"vim-pandoc/vim-pandoc-syntax"}},
@@ -191,23 +307,19 @@ vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 
 -- onedark
 local onedark = require('onedark')
-onedark.setup(
-  {
-    style='deep',
-    transparent=true,
-    ending_tildes=false,
+onedark.setup({
+    style = 'deep',
+    transparent = true,
+    ending_tildes = false,
     code_style = {
-      comments = 'italic',
-      keywords = 'none',
-      functions = 'none',
-      strings = 'none', 
-      variables = 'none'
+        comments = 'italic',
+        keywords = 'none',
+        functions = 'none',
+        strings = 'none',
+        variables = 'none'
     }
-  }
-)
+})
 onedark.load()
-
-
 
 -- _ __ ___ (_)___  ___ 
 -- | '_ ` _ \| / __|/ __|
@@ -246,5 +358,3 @@ require("tele-scope")
 require("sitter")
 require("tree")
 require("notes")
-require("line")
-
