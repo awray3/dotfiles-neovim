@@ -1,9 +1,8 @@
 --  _       _ _     _             
 -- (_)_ __ (_) |_  | |_   _  __ _ 
 -- | | '_ \| | __| | | | | |/ _` |
--- | | | | | | |_ _| | |_| | (_| |
+-- | | | | | | |_  | | |_| | (_| |
 -- |_|_| |_|_|\__(_)_|\__,_|\__,_|
-
 -- bootstrap and setup packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
@@ -29,12 +28,11 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 
 require('packer').startup(function(use)
     use 'wbthomason/packer.nvim' -- Package manager
-                    
+
     --   ___ ___  _ __ ___ 
     --  / __/ _ \| '__/ _ \
     -- | (_| (_) | | |  __/
     --  \___\___/|_|  \___|
-                    
 
     use 'nvim-treesitter/nvim-treesitter'
     -- Additional textobjects for treesitter
@@ -51,9 +49,8 @@ require('packer').startup(function(use)
     use "tpope/vim-surround"
     use {
         'kyazdani42/nvim-tree.lua',
-        requires = {'kyazdani42/nvim-web-devicons' -- optional, for file icons
-        },
-        tag = 'nightly' -- optional, updated every week. (see issue #1193)
+        requires = {'kyazdani42/nvim-web-devicons'},
+        tag = 'nightly'
     }
     use {
         "preservim/nerdcommenter",
@@ -65,27 +62,51 @@ require('packer').startup(function(use)
     }
     use "knubie/vim-kitty-navigator"
 
-    --  _     ____  ____  
-    -- | |   / ___||  _ \ 
+    --  _     ____  ____
+    -- | |   / ___||  _ \
     -- | |   \___ \| |_) |
-    -- | |___ ___) |  __/ 
-    -- |_____|____/|_|    
+    -- | |___ ___) |  __/
+    -- |_____|____/|_|
 
-    use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-    use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'williamboman/nvim-lsp-installer'
+    use {
+        "neovim/nvim-lspconfig",
+    }
 
-    --  _   _ ___ 
+    use({
+        "jose-elias-alvarez/null-ls.nvim",
+        config = function()
+            local null_ls = require("null-ls")
+            null_ls.setup({
+                sources = {
+                    null_ls.builtins.code_actions.proselint,
+                    null_ls.builtins.code_actions.refactoring,
+                    null_ls.builtins.diagnostics.cppcheck,
+                    null_ls.builtins.diagnostics.flake8,
+                    null_ls.builtins.diagnostics.markdownlint,
+                    null_ls.builtins.diagnostics.proselint,
+                    null_ls.builtins.formatting.isort,
+                    null_ls.builtins.formatting.black,
+                    null_ls.builtins.formatting.prettierd,
+                    null_ls.builtins.diagnostics.zsh,
+
+                }
+            })
+        end,
+        requires = { "nvim-lua/plenary.nvim" },
+    })
+    -- use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
+    -- use 'hrsh7th/cmp-nvim-lsp'
+    -- use 'williamboman/nvim-lsp-installer'
+
+    --  _   _ ___
     -- | | | |_ _|
-    -- | | | || | 
-    -- | |_| || | 
+    -- | | | || |
+    -- | |_| || |
     --  \___/|___|
-            
 
     -- colorschemes
-    use 'sainnhe/everforest'
-    use 'safv12/andromeda.vim'
+    -- use 'sainnhe/everforest'
+    -- use 'safv12/andromeda.vim'
     use 'navarasu/onedark.nvim'
 
     -- lines
@@ -196,12 +217,12 @@ require('packer').startup(function(use)
     use({"vimwiki/vimwiki"})
 end)
 
---          _   _   _                 
--- ___  ___| |_| |_(_)_ __   __ _ ___ 
+--           _   _   _                 
+--  ___  ___| |_| |_(_)_ __   __ _ ___ 
 -- / __|/ _ \ __| __| | '_ \ / _` / __|
 -- \__ \  __/ |_| |_| | | | | (_| \__ \
 -- |___/\___|\__|\__|_|_| |_|\__, |___/
---                          |___/     
+--                           |___/     
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
@@ -210,7 +231,7 @@ vim.g.python3_host_prog = "~/.config/nvim/.venv/bin/python"
 --             _   _                 
 --  ___  _ __ | |_(_) ___  _ __  ___ 
 -- / _ \| '_ \| __| |/ _ \| '_ \/ __|
--- | (_) | |_) | |_| | (_) | | | \__ \
+--| (_) | |_) | |_| | (_) | | | \__ \
 -- \___/| .__/ \__|_|\___/|_| |_|___/
 --      |_|                          
 
@@ -228,7 +249,7 @@ vim.opt.completeopt = {'menu', 'preview', 'noselect'}
 -- folds
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
-vim.opt.foldlevel = 3
+vim.opt.foldlevel = 99
 
 vim.opt.mouse = 'a'
 
@@ -251,7 +272,7 @@ vim.opt.termguicolors = true
 -- | |/ / _ \ | | | '_ ` _ \ / _` | '_ \/ __|
 -- |   <  __/ |_| | | | | | | (_| | |_) \__ \
 -- |_|\_\___|\__, |_| |_| |_|\__,_| .__/|___/
---          |___/                |_|        
+--           |___/                |_|        
 
 -- Keybindings work like this:
 -- vim.keymap.set({mode}, {lhs}, {rhs}, {opts})
@@ -296,7 +317,7 @@ vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 --           _                
 --  ___ ___ | | ___  _ __ ___ 
 -- / __/ _ \| |/ _ \| '__/ __|
--- | (_| (_) | | (_) | |  \__ \
+--| (_| (_) | | (_) | |  \__ \
 -- \___\___/|_|\___/|_|  |___/
 
 -- For everforest
@@ -320,6 +341,60 @@ onedark.setup({
     }
 })
 onedark.load()
+
+-- _     ____  ____  
+--| |   / ___||  _ \ 
+--| |   \___ \| |_) |
+--| |___ ___) |  __/ 
+--|_____|____/|_|    
+--                   
+local lspconfig = require("lspconfig")
+
+-- Mappings.
+-- See `:help vim.diagnostic.*` for documentation on any of the below functions
+local opts = { noremap=true, silent=true }
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  -- Enable completion triggered by <c-x><c-o>
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  vim.keymap.set('n', '<space>wl', function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, bufopts)
+  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+end
+
+lspconfig.sumneko_lua.setup({
+    on_attach = on_attach,
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = { "vim", "bufnr" },
+            },
+        }
+    }
+})
+
 
 -- _ __ ___ (_)___  ___ 
 -- | '_ ` _ \| / __|/ __|
@@ -350,10 +425,9 @@ endif
 set backupdir=~/.local/share/nvim/backup " Don't put backups in current dir
 set backup
 set noswapfile
-
 ]]
 
-require("lsp")
+-- require("lsp")
 require("tele-scope")
 require("sitter")
 require("tree")
