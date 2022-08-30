@@ -37,6 +37,7 @@ require('packer').startup(function(use)
     use 'nvim-treesitter/nvim-treesitter'
     -- Additional textobjects for treesitter
     use 'nvim-treesitter/nvim-treesitter-textobjects'
+    use 'nvim-treesitter/playground'
 
     use {
         'nvim-telescope/telescope.nvim',
@@ -61,6 +62,12 @@ require('packer').startup(function(use)
         end
     }
     use "knubie/vim-kitty-navigator"
+
+    use { 'antoinemadec/FixCursorHold.nvim',
+        config = function()
+            vim.g.cursorhold_updatetime = 100
+        end
+    }
 
     --  _     ____  ____
     -- | |   / ___||  _ \
@@ -225,7 +232,7 @@ vim.opt.shiftwidth = 4
 vim.opt.autoindent = true
 vim.opt.cursorline = false
 vim.opt.cmdheight = 1
-vim.opt.autochdir = true
+vim.opt.autochdir = false
 vim.opt.completeopt = { 'menu', 'preview', 'noselect' }
 
 -- folds
@@ -312,10 +319,10 @@ vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 local onedark = require('onedark')
 onedark.setup({
     style = 'deep',
-    transparent = true,
+    transparent = false,
     ending_tildes = false,
     code_style = {
-        comments = 'italic',
+        comments = 'none',
         keywords = 'none',
         functions = 'none',
         strings = 'none',
@@ -332,12 +339,17 @@ onedark.load()
 --
 local lspconfig = require("lspconfig")
 
+-- global diagnostics configuration
+vim.diagnostic.config({
+    virtual_text = false
+})
+
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+vim.keymap.set('n', '<Leader>Nd', vim.diagnostic.goto_prev, opts)
+vim.keymap.set('n', '<Leader>nd', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
 -- Use an on_attach function to only map the following keys
@@ -353,7 +365,7 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    --vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
     vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
     vim.keymap.set('n', '<space>wl', function()
@@ -363,7 +375,40 @@ local on_attach = function(client, bufnr)
     vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
     vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
     vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+    -- vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+
+
+    -- null-ls formatting
+    local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
+
+    if client.supports_method("textDocument/formatting") then
+        vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+        vim.api.nvim_create_autocmd("BufWritePre", {
+            group = augroup,
+            buffer = bufnr,
+            callback = function()
+                -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
+                vim.lsp.buf.formatting_sync()
+            end,
+        })
+    end
+
+    vim.api.nvim_create_autocmd("CursorHold", {
+        buffer = bufnr,
+        callback = function()
+            local opts_callback = {
+                focusable = false,
+                close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+                border = 'rounded',
+                source = 'always',
+                prefix = ' ',
+                scope = 'cursor',
+            }
+            vim.diagnostic.open_float(opts_callback)
+        end
+    })
+
+
 end
 
 lspconfig.sumneko_lua.setup({
@@ -373,29 +418,23 @@ lspconfig.sumneko_lua.setup({
             diagnostics = {
                 globals = { "vim", "bufnr" },
             },
+            format = {
+                enable = true,
+                defaultConfig = {
+                    indent_style = "space",
+                    indent_size = "2"
+                }
+            }
         }
     }
 })
 
 -- null-ls setup
 local null_ls = require("null-ls")
-local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
 null_ls.setup({
-    debug=false,
-    on_attach = function(client, bufnr)
-        if client.supports_method("textDocument/formatting") then
-            vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-            vim.api.nvim_create_autocmd("BufWritePre", {
-                group = augroup,
-                buffer = bufnr,
-                callback = function()
-                    -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-                    vim.lsp.buf.formatting_sync()
-                end,
-            })
-        end
-    end,
+    debug = false,
+    on_attach = on_attach,
     sources = {
         null_ls.builtins.code_actions.refactoring,
         null_ls.builtins.diagnostics.cppcheck,
@@ -404,7 +443,7 @@ null_ls.setup({
         null_ls.builtins.formatting.isort,
         null_ls.builtins.formatting.black,
         null_ls.builtins.formatting.prettierd.with({
-            env = {PRETTIERD_DEFAULT_CONFIG = vim.fn.expand("~/.prettierrc.yml")}
+            env = { PRETTIERD_DEFAULT_CONFIG = vim.fn.expand("~/.prettierrc.yml") }
         }),
         null_ls.builtins.diagnostics.zsh,
 
@@ -417,7 +456,7 @@ null_ls.setup({
 -- |_| |_| |_|_|___/\___|
 
 -- Highlight on yank
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', {
+local yank_highlight_group = vim.api.nvim_create_augroup('YankHighlight', {
     clear = true
 })
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -426,7 +465,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
             timeout = 300
         })
     end,
-    group = highlight_group,
+    group = yank_highlight_group,
     pattern = '*'
 })
 
