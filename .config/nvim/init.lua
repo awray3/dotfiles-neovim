@@ -1,5 +1,5 @@
---  _       _ _     _             
--- (_)_ __ (_) |_  | |_   _  __ _ 
+--  _       _ _     _
+-- (_)_ __ (_) |_  | |_   _  __ _
 -- | | '_ \| | __| | | | | |/ _` |
 -- | | | | | | |_  | | |_| | (_| |
 -- |_|_| |_|_|\__(_)_|\__,_|\__,_|
@@ -10,26 +10,26 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
 end
 
-local packer_group = vim.api.nvim_create_augroup('Packer', {
-    clear = true
-})
-vim.api.nvim_create_autocmd('BufWritePost', {
-    command = 'source <afile> | PackerCompile',
-    group = packer_group,
-    pattern = 'init.lua'
-})
+--local packer_group = vim.api.nvim_create_augroup('Packer', {
+--    clear = true
+--})
+--vim.api.nvim_create_autocmd('BufWritePost', {
+--    command = 'source <afile> | PackerCompile',
+--    group = packer_group,
+--    pattern = 'init.lua'
+--})
 
---  ____  _             _           
--- |  _ \| |_   _  __ _(_)_ __  ___ 
+--  ____  _             _
+-- |  _ \| |_   _  __ _(_)_ __  ___
 -- | |_) | | | | |/ _` | | '_ \/ __|
 -- |  __/| | |_| | (_| | | | | \__ \
 -- |_|   |_|\__,_|\__, |_|_| |_|___/
---                |___/             
+--                |___/
 
 require('packer').startup(function(use)
     use 'wbthomason/packer.nvim' -- Package manager
 
-    --   ___ ___  _ __ ___ 
+    --   ___ ___  _ __ ___
     --  / __/ _ \| '__/ _ \
     -- | (_| (_) | | |  __/
     --  \___\___/|_|  \___|
@@ -40,7 +40,7 @@ require('packer').startup(function(use)
 
     use {
         'nvim-telescope/telescope.nvim',
-        requires = {'nvim-lua/plenary.nvim'}
+        requires = { 'nvim-lua/plenary.nvim' }
     }
     use {
         'nvim-telescope/telescope-fzf-native.nvim',
@@ -49,7 +49,7 @@ require('packer').startup(function(use)
     use "tpope/vim-surround"
     use {
         'kyazdani42/nvim-tree.lua',
-        requires = {'kyazdani42/nvim-web-devicons'},
+        requires = { 'kyazdani42/nvim-web-devicons' },
         tag = 'nightly'
     }
     use {
@@ -74,24 +74,6 @@ require('packer').startup(function(use)
 
     use({
         "jose-elias-alvarez/null-ls.nvim",
-        config = function()
-            local null_ls = require("null-ls")
-            null_ls.setup({
-                sources = {
-                    null_ls.builtins.code_actions.proselint,
-                    null_ls.builtins.code_actions.refactoring,
-                    null_ls.builtins.diagnostics.cppcheck,
-                    null_ls.builtins.diagnostics.flake8,
-                    null_ls.builtins.diagnostics.markdownlint,
-                    null_ls.builtins.diagnostics.proselint,
-                    null_ls.builtins.formatting.isort,
-                    null_ls.builtins.formatting.black,
-                    null_ls.builtins.formatting.prettierd,
-                    null_ls.builtins.diagnostics.zsh,
-
-                }
-            })
-        end,
         requires = { "nvim-lua/plenary.nvim" },
     })
     -- use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
@@ -133,33 +115,33 @@ require('packer').startup(function(use)
                     always_divide_middle = true
                 },
                 sections = {
-                    lualine_a = {"mode"},
-                    lualine_b = {"branch", "diff", {
+                    lualine_a = { "mode" },
+                    lualine_b = { "branch", "diff", {
                         "diagnostics",
-                        sources = {"nvim_diagnostic"}
-                    }},
-                    lualine_c = {"filename"},
-                    lualine_x = {"filetype", "fileformat"},
-                    lualine_y = {"progress"},
-                    lualine_z = {"location"}
+                        sources = { "nvim_diagnostic" }
+                    } },
+                    lualine_c = { "filename" },
+                    lualine_x = { "filetype", "fileformat" },
+                    lualine_y = { "progress" },
+                    lualine_z = { "location" }
                 },
                 inactive_sections = {
                     lualine_a = {},
                     lualine_b = {},
-                    lualine_c = {"filename"},
-                    lualine_x = {"location"},
+                    lualine_c = { "filename" },
+                    lualine_x = { "location" },
                     lualine_y = {},
                     lualine_z = {}
                 },
                 tabline = {},
-                extensions = {'nvim-tree'}
+                extensions = { 'nvim-tree' }
             })
         end
     }
     use {
         'kdheepak/tabline.nvim',
         config = function()
-            require'tabline'.setup {
+            require 'tabline'.setup {
                 -- Defaults configuration options
                 enable = true,
                 options = {
@@ -180,63 +162,63 @@ require('packer').startup(function(use)
             set sessionoptions+=tabpages,globals " store tabpages and globals in session
             ]]
         end,
-        requires = {{
+        requires = { {
             'nvim-lualine/lualine.nvim',
             opt = true
         }, {
             'kyazdani42/nvim-web-devicons',
             opt = true
-        }}
+        } }
     }
     -- Add indentation guides even on blank lines
     use 'lukas-reineke/indent-blankline.nvim'
     -- Add git related info in the signs columns and popups
     use {
         'lewis6991/gitsigns.nvim',
-        requires = {'nvim-lua/plenary.nvim'}
+        requires = { 'nvim-lua/plenary.nvim' }
     }
 
-    --              _            
-    --  _ __   ___ | |_ ___  ___ 
+    --              _
+    --  _ __   ___ | |_ ___  ___
     -- | '_ \ / _ \| __/ _ \/ __|
     -- | | | | (_) | ||  __/\__ \
     -- |_| |_|\___/ \__\___||___/
 
     use({
         "quarto-dev/quarto-vim",
-        requires = {{"vim-pandoc/vim-pandoc-syntax"}},
-        ft = {"quarto"}
+        requires = { { "vim-pandoc/vim-pandoc-syntax" } },
+        ft = { "quarto" }
     })
     use({
         "iamcco/markdown-preview.nvim",
         run = function()
             vim.fn["mkdp#util#install"]()
         end,
-        ft = {"markdown"}
+        ft = { "markdown" }
     })
-    use({"vimwiki/vimwiki"})
+    use({ "vimwiki/vimwiki" })
 end)
 
---           _   _   _                 
---  ___  ___| |_| |_(_)_ __   __ _ ___ 
+--           _   _   _
+--  ___  ___| |_| |_(_)_ __   __ _ ___
 -- / __|/ _ \ __| __| | '_ \ / _` / __|
 -- \__ \  __/ |_| |_| | | | | (_| \__ \
 -- |___/\___|\__|\__|_|_| |_|\__, |___/
---                           |___/     
+--                           |___/
 
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 vim.g.python3_host_prog = "~/.config/nvim/.venv/bin/python"
 
---             _   _                 
---  ___  _ __ | |_(_) ___  _ __  ___ 
+--             _   _
+--  ___  _ __ | |_(_) ___  _ __  ___
 -- / _ \| '_ \| __| |/ _ \| '_ \/ __|
 --| (_) | |_) | |_| | (_) | | | \__ \
 -- \___/| .__/ \__|_|\___/|_| |_|___/
---      |_|                          
+--      |_|
 
 vim.opt.hidden = true
-vim.opt.backspace = {'indent', 'eol', 'start'}
+vim.opt.backspace = { 'indent', 'eol', 'start' }
 vim.opt.expandtab = true
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
@@ -244,7 +226,7 @@ vim.opt.autoindent = true
 vim.opt.cursorline = false
 vim.opt.cmdheight = 1
 vim.opt.autochdir = true
-vim.opt.completeopt = {'menu', 'preview', 'noselect'}
+vim.opt.completeopt = { 'menu', 'preview', 'noselect' }
 
 -- folds
 vim.opt.foldmethod = "expr"
@@ -267,18 +249,18 @@ vim.opt.smartcase = true
 -- colors
 vim.opt.termguicolors = true
 
--- _                                        
--- | | _____ _   _ _ __ ___   __ _ _ __  ___ 
+-- _
+-- | | _____ _   _ _ __ ___   __ _ _ __  ___
 -- | |/ / _ \ | | | '_ ` _ \ / _` | '_ \/ __|
 -- |   <  __/ |_| | | | | | | (_| | |_) \__ \
 -- |_|\_\___|\__, |_| |_| |_|\__,_| .__/|___/
---           |___/                |_|        
+--           |___/                |_|
 
 -- Keybindings work like this:
 -- vim.keymap.set({mode}, {lhs}, {rhs}, {opts})
 --
 
--- function for making an Fkey binding for a file. 
+-- function for making an Fkey binding for a file.
 -- opens the file in a new tab.
 function FKeyBinding(file, Fkey)
     vim.keymap.set("n", Fkey, "<Cmd>tabnew " .. file .. "<CR>")
@@ -314,8 +296,8 @@ vim.keymap.set("n", "Y", "y$")
 -- insert the current date in long format
 vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 
---           _                
---  ___ ___ | | ___  _ __ ___ 
+--           _
+--  ___ ___ | | ___  _ __ ___
 -- / __/ _ \| |/ _ \| '__/ __|
 --| (_| (_) | | (_) | |  \__ \
 -- \___\___/|_|\___/|_|  |___/
@@ -342,17 +324,17 @@ onedark.setup({
 })
 onedark.load()
 
--- _     ____  ____  
---| |   / ___||  _ \ 
+-- _     ____  ____
+--| |   / ___||  _ \
 --| |   \___ \| |_) |
---| |___ ___) |  __/ 
---|_____|____/|_|    
---                   
+--| |___ ___) |  __/
+--|_____|____/|_|
+--
 local lspconfig = require("lspconfig")
 
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap=true, silent=true }
+local opts = { noremap = true, silent = true }
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
@@ -361,27 +343,27 @@ vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    -- Enable completion triggered by <c-x><c-o>
+    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  -- Mappings.
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-  vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+    -- Mappings.
+    -- See `:help vim.lsp.*` for documentation on any of the below functions
+    local bufopts = { noremap = true, silent = true, buffer = bufnr }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+    vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+    vim.keymap.set('n', '<space>wl', function()
+        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, bufopts)
+    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
+    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
+    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
 end
 
 lspconfig.sumneko_lua.setup({
@@ -395,10 +377,43 @@ lspconfig.sumneko_lua.setup({
     }
 })
 
+-- null-ls setup
+local null_ls = require("null-ls")
+local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
 
--- _ __ ___ (_)___  ___ 
+null_ls.setup({
+    debug=false,
+    on_attach = function(client, bufnr)
+        if client.supports_method("textDocument/formatting") then
+            vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                group = augroup,
+                buffer = bufnr,
+                callback = function()
+                    -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
+                    vim.lsp.buf.formatting_sync()
+                end,
+            })
+        end
+    end,
+    sources = {
+        null_ls.builtins.code_actions.refactoring,
+        null_ls.builtins.diagnostics.cppcheck,
+        null_ls.builtins.diagnostics.flake8,
+        null_ls.builtins.diagnostics.markdownlint,
+        null_ls.builtins.formatting.isort,
+        null_ls.builtins.formatting.black,
+        null_ls.builtins.formatting.prettierd.with({
+            env = {PRETTIERD_DEFAULT_CONFIG = vim.fn.expand("~/.prettierrc.yml")}
+        }),
+        null_ls.builtins.diagnostics.zsh,
+
+    }
+})
+
+-- _ __ ___ (_)___  ___
 -- | '_ ` _ \| / __|/ __|
--- | | | | | | \__ \ (__ 
+-- | | | | | | \__ \ (__
 -- |_| |_| |_|_|___/\___|
 
 -- Highlight on yank
