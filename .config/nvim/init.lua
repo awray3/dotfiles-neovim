@@ -47,6 +47,8 @@ require('packer').startup(function(use)
         'nvim-telescope/telescope-fzf-native.nvim',
         run = 'make'
     }
+    use { "nvim-telescope/telescope-file-browser.nvim" }
+
     use "tpope/vim-surround"
     use {
         'kyazdani42/nvim-tree.lua',
@@ -94,7 +96,14 @@ require('packer').startup(function(use)
     --  \___/|___|
 
     -- colorschemes
-    -- use 'sainnhe/everforest'
+    use { 'sainnhe/everforest',
+        config = function()
+            vim.g.everforest_background = 'soft'
+            vim.g.everforest_better_performance = 1
+            vim.g.everforest_disable_italic_comment = 1
+            vim.opt.background = 'dark'
+        end
+    }
     -- use 'safv12/andromeda.vim'
     use 'navarasu/onedark.nvim'
 
@@ -106,6 +115,7 @@ require('packer').startup(function(use)
             opt = true
         },
         config = function()
+            print("lualine config flag!")
             require("lualine").setup({
                 options = {
                     icons_enabled = true,
@@ -201,7 +211,7 @@ require('packer').startup(function(use)
         run = function()
             vim.fn["mkdp#util#install"]()
         end,
-        ft = { "markdown" }
+        ft = { "markdown", "vimwiki" }
     })
     use({ "vimwiki/vimwiki" })
 end)
@@ -294,14 +304,15 @@ vim.keymap.set("n", "<C-l>", "<C-w>l")
 
 vim.keymap.set("n", "<Leader>/", "<Cmd>nohlsearch<CR>")
 
--- telescope search-under-word
-vim.keymap.set("n", "#", "<Cmd>Telescope grep_string<CR>")
 
 -- Make Y behave like the other capitals
 vim.keymap.set("n", "Y", "y$")
 
 -- insert the current date in long format
 vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
+
+--
+vim.keymap.set("n", "<Leader>o", "<cmd>only<CR>")
 
 --           _
 --  ___ ___ | | ___  _ __ ___
@@ -310,9 +321,6 @@ vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 -- \___\___/|_|\___/|_|  |___/
 
 -- For everforest
--- vim.g.everforest_background = 'soft'
--- vim.g.everforest_better_performance = 1
--- vim.opt.background = 'dark'
 -- vim.cmd [[colorscheme everforest]]
 
 -- onedark
@@ -336,7 +344,7 @@ onedark.load()
 --| |   \___ \| |_) |
 --| |___ ___) |  __/
 --|_____|____/|_|
---
+-- anguage erver rotocol
 local lspconfig = require("lspconfig")
 
 -- global diagnostics configuration
@@ -347,7 +355,6 @@ vim.diagnostic.config({
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
 vim.keymap.set('n', '<Leader>Nd', vim.diagnostic.goto_prev, opts)
 vim.keymap.set('n', '<Leader>nd', vim.diagnostic.goto_next, opts)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
@@ -361,10 +368,8 @@ local on_attach = function(client, bufnr)
     -- Mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
     vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
     --vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
     vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
@@ -411,6 +416,7 @@ local on_attach = function(client, bufnr)
 
 end
 
+-- Lua Language Server
 lspconfig.sumneko_lua.setup({
     on_attach = on_attach,
     settings = {
@@ -427,6 +433,10 @@ lspconfig.sumneko_lua.setup({
             }
         }
     }
+})
+
+lspconfig.pyright.setup({
+    on_attach = on_attach
 })
 
 -- null-ls setup
@@ -447,6 +457,96 @@ null_ls.setup({
         }),
         null_ls.builtins.diagnostics.zsh,
 
+    }
+})
+
+
+-- _____    _
+--|_   _|__| | ___  ___  ___ ___  _ __   ___
+--  | |/ _ \ |/ _ \/ __|/ __/ _ \| '_ \ / _ \
+--  | |  __/ |  __/\__ \ (_| (_) | |_) |  __/
+--  |_|\___|_|\___||___/\___\___/| .__/ \___|
+--                               |_|
+--  The tool for searching things
+
+local tele = require("telescope")
+local telescope_opts = { noremap = true, silent = true }
+
+local telescope_bindings = {
+    [""] = "builtin",
+    f = "file_browser",
+    g = "live_grep",
+    b = "buffers",
+    h = "help_tags",
+    j = "jump_list",
+    s = "current_buffer_fuzzy_find",
+    m = "man_pages",
+    r = "lsp_references",
+    d = "lsp_definitions",
+    c = "colorscheme"
+}
+
+-- telescope search-under-word (replaces default # action)
+vim.keymap.set("n", "#", "<Cmd>Telescope grep_string<CR>")
+
+for postfix_key, cmd in pairs(telescope_bindings) do
+    vim.keymap.set("n", "<leader>t" .. postfix_key, "<cmd>Telescope " .. cmd .. " theme=ivy<CR>", telescope_opts)
+end
+
+tele.setup({
+    extensions = {
+        file_browser = {
+            hijack_netrw = true
+        }
+    }
+})
+
+tele.load_extension("fzf")
+tele.load_extension("file_browser")
+
+-- _____                   _ _   _
+--|_   _| __ ___  ___  ___(_) |_| |_ ___ _ __
+--  | || '__/ _ \/ _ \/ __| | __| __/ _ \ '__|
+--  | || | |  __/  __/\__ \ | |_| ||  __/ |
+--  |_||_|  \___|\___||___/_|\__|\__\___|_|
+
+local treesitter = require("nvim-treesitter.configs")
+treesitter.setup({
+    ensure_installed = {
+        "bash",
+        "comment",
+        "python",
+        "json",
+        "lua",
+        "yaml",
+        "vim",
+    },
+    highlight = {
+        enable = true,
+    },
+    incremental_selection = {
+        enable = false,
+    },
+    indent = {
+        enable = true,
+    },
+    playground = {
+        enable = true,
+        disable = {},
+        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+        persist_queries = false, -- Whether the query persists across vim sessions
+        keybindings = {
+            toggle_query_editor = 'o',
+            toggle_hl_groups = 'i',
+            toggle_injected_languages = 't',
+            toggle_anonymous_nodes = 'a',
+            toggle_language_display = 'I',
+            focus_language = 'f',
+            unfocus_language = 'F',
+            update = 'R',
+            goto_node = '<cr>',
+            show_help = '?',
+        },
     }
 })
 
@@ -482,7 +582,7 @@ set noswapfile
 ]]
 
 -- require("lsp")
-require("tele-scope")
-require("sitter")
-require("tree")
+--require("tele-scope")
+--require("sitter")
+--require("tree")
 require("notes")
