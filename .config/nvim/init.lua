@@ -59,8 +59,8 @@ require('packer').startup(function(use)
         "preservim/nerdcommenter",
         config = function()
             vim.g.NERDCreateDefaultMappings = false
-            vim.keymap.set("n", "<C-_>", "<Plug>NERDCommenterToggle")
-            vim.keymap.set("v", "<C-_>", "<Plug>NERDCommenterToggle")
+            vim.keymap.set("n", "<C-_>", "<Plug>NERDCommenterToggle", { noremap = true })
+            vim.keymap.set("v", "<C-_>", "<Plug>NERDCommenterToggle", { noremap = true })
         end
     }
     use "knubie/vim-kitty-navigator"
@@ -115,7 +115,6 @@ require('packer').startup(function(use)
             opt = true
         },
         config = function()
-            print("lualine config flag!")
             require("lualine").setup({
                 options = {
                     icons_enabled = true,
@@ -277,19 +276,6 @@ vim.opt.termguicolors = true
 -- vim.keymap.set({mode}, {lhs}, {rhs}, {opts})
 --
 
--- function for making an Fkey binding for a file.
--- opens the file in a new tab.
-function FKeyBinding(file, Fkey)
-    vim.keymap.set("n", Fkey, "<Cmd>tabnew " .. file .. "<CR>")
-end
-
--- maps the F keys to key config files
-FKeyBinding("$HOME/.config/nvim/init.lua", "<F1>")
-FKeyBinding("$HOME/.zshrc", "<F2>")
-FKeyBinding("$HOME/.config/kitty/kitty.conf", "<F3>")
-FKeyBinding("$HOME/.config/starship.toml", "<F4>")
-FKeyBinding("$HOME/Documents/vimwiki", "<F5>")
-
 -- remap esc
 vim.keymap.set("i", "jk", "<ESC>")
 
@@ -311,8 +297,10 @@ vim.keymap.set("n", "Y", "y$")
 -- insert the current date in long format
 vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 
---
+-- Make the buffer the only buffer on the screen
 vim.keymap.set("n", "<Leader>o", "<cmd>only<CR>")
+
+vim.keymap.set("n", "<C-T>", "<cmd>tabnew<CR>")
 
 --           _
 --  ___ ___ | | ___  _ __ ___
@@ -469,7 +457,7 @@ null_ls.setup({
 --                               |_|
 --  The tool for searching things
 
-local tele = require("telescope")
+local telescope = require("telescope")
 local telescope_opts = { noremap = true, silent = true }
 
 local telescope_bindings = {
@@ -493,7 +481,24 @@ for postfix_key, cmd in pairs(telescope_bindings) do
     vim.keymap.set("n", "<leader>t" .. postfix_key, "<cmd>Telescope " .. cmd .. " theme=ivy<CR>", telescope_opts)
 end
 
-tele.setup({
+
+local open_dotfiles = function(cwd)
+    return function()
+        require("telescope.builtin").find_files({
+            cwd = cwd,
+            theme = require("telescope.themes").get_ivy()
+        })
+    end
+end
+
+vim.keymap.set("n", "<leader>tn", open_dotfiles("$NEOHOME"), telescope_opts)
+vim.keymap.set("n", "<leader>tz", open_dotfiles("$ZSH"), telescope_opts)
+
+
+telescope.setup({
+    defaults = {
+        path_display = { shorten = 2 },
+    },
     extensions = {
         file_browser = {
             hijack_netrw = true
@@ -501,8 +506,8 @@ tele.setup({
     }
 })
 
-tele.load_extension("fzf")
-tele.load_extension("file_browser")
+telescope.load_extension("fzf")
+telescope.load_extension("file_browser")
 
 -- _____                   _ _   _
 --|_   _| __ ___  ___  ___(_) |_| |_ ___ _ __
