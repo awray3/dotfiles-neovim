@@ -5,13 +5,13 @@ vim.cmd([[
 local nvim_tree = require("nvim-tree")
 
 nvim_tree.setup({
-    disable_netrw = true,
-    hijack_netrw = true,
+    disable_netrw = false,
+    hijack_netrw = false,
     open_on_setup = false,
-    hijack_unnamed_buffer_when_opening=true,
+    hijack_unnamed_buffer_when_opening = true,
     view = {
         width = 30,
-        adaptive_size=true,
+        adaptive_size = true,
     },
     respect_buf_cwd = true,
     create_in_closed_folder = false,
@@ -26,7 +26,7 @@ nvim_tree.setup({
         add_trailing = true,
         highlight_opened_files = '2',
         root_folder_modifier = ":~",
-        special_files = {'README.md', 'Makefile', 'MAKEFILE', 'tasks.py', 'init.vim', 'index.md'},
+        special_files = { 'README.md', 'Makefile', 'MAKEFILE', 'tasks.py', 'init.vim', 'index.md' },
         highlight_git = true,
         group_empty = true
     }
@@ -35,10 +35,6 @@ nvim_tree.setup({
 
 vim.keymap.set(
     "n", "<C-n>", "<Cmd>NvimTreeToggle<CR>"
-)
-
-vim.keymap.set(
-    "n", "<Leader>z", ":lua require('telekasten').panel()<CR>"
 )
 
 -- vim.cmd([[

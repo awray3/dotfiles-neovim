@@ -3,6 +3,8 @@
 -- | | '_ \| | __| | | | | |/ _` |
 -- | | | | | | |_  | | |_| | (_| |
 -- |_|_| |_|_|\__(_)_|\__,_|\__,_|
+
+
 -- bootstrap and setup packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
@@ -26,7 +28,9 @@ end
 -- |_|   |_|\__,_|\__, |_|_| |_|___/
 --                |___/
 
-require('packer').startup(function(use)
+local terminal_is_kitty = vim.env.TERM == 'xterm-kitty'
+
+require('packer').startup({ function(use)
     use 'wbthomason/packer.nvim' -- Package manager
 
     --   ___ ___  _ __ ___
@@ -34,14 +38,24 @@ require('packer').startup(function(use)
     -- | (_| (_) | | |  __/
     --  \___\___/|_|  \___|
 
-    use 'nvim-treesitter/nvim-treesitter'
+    use {
+        'nvim-treesitter/nvim-treesitter',
+        run = ':TSUpdate',
+        config = function()
+            require('aw.treesitter')
+        end
+    }
     -- Additional textobjects for treesitter
     use 'nvim-treesitter/nvim-treesitter-textobjects'
     use 'nvim-treesitter/playground'
 
+
     use {
         'nvim-telescope/telescope.nvim',
-        requires = { 'nvim-lua/plenary.nvim' }
+        requires = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            require('aw.telescope')
+        end
     }
     use {
         'nvim-telescope/telescope-fzf-native.nvim',
@@ -53,17 +67,23 @@ require('packer').startup(function(use)
     use {
         'kyazdani42/nvim-tree.lua',
         requires = { 'kyazdani42/nvim-web-devicons' },
-        tag = 'nightly'
+        tag = 'nightly',
+        config = function()
+            require('tree')
+        end
     }
     use {
         "preservim/nerdcommenter",
         config = function()
             vim.g.NERDCreateDefaultMappings = false
-            vim.keymap.set("n", "<C-_>", "<Plug>NERDCommenterToggle", { noremap = true })
-            vim.keymap.set("v", "<C-_>", "<Plug>NERDCommenterToggle", { noremap = true })
+            vim.keymap.set("n", "<Leader>/", "<Plug>NERDCommenterToggle", { noremap = true })
+            vim.keymap.set("v", "<Leader>/", "<Plug>NERDCommenterToggle", { noremap = true })
         end
     }
-    use "knubie/vim-kitty-navigator"
+
+    if terminal_is_kitty then
+        use "knubie/vim-kitty-navigator"
+    end
 
     use { 'antoinemadec/FixCursorHold.nvim',
         config = function()
@@ -115,68 +135,13 @@ require('packer').startup(function(use)
             opt = true
         },
         config = function()
-            require("lualine").setup({
-                options = {
-                    icons_enabled = true,
-                    theme = "auto",
-                    component_separators = {
-                        left = "",
-                        right = ""
-                    },
-                    section_separators = {
-                        left = "",
-                        right = ""
-                    },
-                    disabled_filetypes = {},
-                    always_divide_middle = true
-                },
-                sections = {
-                    lualine_a = { "mode" },
-                    lualine_b = { "branch", "diff", {
-                        "diagnostics",
-                        sources = { "nvim_diagnostic" }
-                    } },
-                    lualine_c = { "filename" },
-                    lualine_x = { "filetype", "fileformat" },
-                    lualine_y = { "progress" },
-                    lualine_z = { "location" }
-                },
-                inactive_sections = {
-                    lualine_a = {},
-                    lualine_b = {},
-                    lualine_c = { "filename" },
-                    lualine_x = { "location" },
-                    lualine_y = {},
-                    lualine_z = {}
-                },
-                tabline = {},
-                extensions = { 'nvim-tree' }
-            })
+            require('aw.lualine')
         end
     }
     use {
         'kdheepak/tabline.nvim',
         config = function()
-            require 'tabline'.setup {
-                -- Defaults configuration options
-                enable = true,
-                options = {
-                    -- If lualine is installed tabline will use separators configured in lualine by default.
-                    -- These options can be used to override those settings.
-                    max_bufferline_percent = 66, -- set to nil by default, and it uses vim.o.columns * 2/3
-                    show_tabs_always = false, -- this shows tabs only when there are more than one tab or if the first tab is named
-                    show_devicons = true, -- this shows devicons in buffer section
-                    show_bufnr = false, -- this appends [bufnr] to buffer section,
-                    show_filename_only = false, -- shows base filename only instead of relative path in filename
-                    modified_icon = "+ ", -- change the default modified icon
-                    modified_italic = false, -- set to true by default; this determines whether the filename turns italic if modified
-                    show_tabs_only = false -- this shows only tabs instead of tabs + buffers
-                }
-            }
-            vim.cmd [[
-            set guioptions-=e " Use showtabline in gui vim
-            set sessionoptions+=tabpages,globals " store tabpages and globals in session
-            ]]
+            require('aw.tabline')
         end,
         requires = { {
             'nvim-lualine/lualine.nvim',
@@ -213,7 +178,13 @@ require('packer').startup(function(use)
         ft = { "markdown", "vimwiki" }
     })
     use({ "vimwiki/vimwiki" })
-end)
+end,
+    config = {
+        display = {
+            open_fn = require('packer.util').float
+        }
+    }
+})
 
 --           _   _   _
 --  ___  ___| |_| |_(_)_ __   __ _ ___
@@ -288,7 +259,7 @@ vim.keymap.set("n", "<C-j>", "<C-w>j")
 vim.keymap.set("n", "<C-k>", "<C-w>k")
 vim.keymap.set("n", "<C-l>", "<C-w>l")
 
-vim.keymap.set("n", "<Leader>/", "<Cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<Leader>nh", "<Cmd>nohlsearch<CR>")
 
 
 -- Make Y behave like the other capitals
@@ -327,234 +298,6 @@ onedark.setup({
 })
 onedark.load()
 
--- _     ____  ____
---| |   / ___||  _ \
---| |   \___ \| |_) |
---| |___ ___) |  __/
---|_____|____/|_|
--- anguage erver rotocol
-local lspconfig = require("lspconfig")
-
--- global diagnostics configuration
-vim.diagnostic.config({
-    virtual_text = false
-})
-
--- Mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<Leader>Nd', vim.diagnostic.goto_prev, opts)
-vim.keymap.set('n', '<Leader>nd', vim.diagnostic.goto_next, opts)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
-
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer
-local on_attach = function(client, bufnr)
-    -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-    -- Mappings.
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    local bufopts = { noremap = true, silent = true, buffer = bufnr }
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-    --vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-    vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-    vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-    vim.keymap.set('n', '<space>wl', function()
-        print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-    end, bufopts)
-    vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
-    vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
-    vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    -- vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
-
-
-    -- null-ls formatting
-    local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
-
-    if client.supports_method("textDocument/formatting") then
-        vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-        vim.api.nvim_create_autocmd("BufWritePre", {
-            group = augroup,
-            buffer = bufnr,
-            callback = function()
-                -- on 0.8, you should use vim.lsp.buf.format({ bufnr = bufnr }) instead
-                vim.lsp.buf.formatting_sync()
-            end,
-        })
-    end
-
-    vim.api.nvim_create_autocmd("CursorHold", {
-        buffer = bufnr,
-        callback = function()
-            local opts_callback = {
-                focusable = false,
-                close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-                border = 'rounded',
-                source = 'always',
-                prefix = ' ',
-                scope = 'cursor',
-            }
-            vim.diagnostic.open_float(opts_callback)
-        end
-    })
-
-
-end
-
--- Lua Language Server
-lspconfig.sumneko_lua.setup({
-    on_attach = on_attach,
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { "vim", "bufnr" },
-            },
-            format = {
-                enable = true,
-                defaultConfig = {
-                    indent_style = "space",
-                    indent_size = "2"
-                }
-            }
-        }
-    }
-})
-
-lspconfig.pyright.setup({
-    on_attach = on_attach
-})
-
--- null-ls setup
-local null_ls = require("null-ls")
-
-null_ls.setup({
-    debug = false,
-    on_attach = on_attach,
-    sources = {
-        null_ls.builtins.code_actions.refactoring,
-        null_ls.builtins.diagnostics.cppcheck,
-        null_ls.builtins.diagnostics.flake8,
-        null_ls.builtins.diagnostics.markdownlint,
-        null_ls.builtins.formatting.isort,
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.prettierd.with({
-            env = { PRETTIERD_DEFAULT_CONFIG = vim.fn.expand("~/.prettierrc.yml") }
-        }),
-        null_ls.builtins.diagnostics.zsh,
-
-    }
-})
-
-
--- _____    _
---|_   _|__| | ___  ___  ___ ___  _ __   ___
---  | |/ _ \ |/ _ \/ __|/ __/ _ \| '_ \ / _ \
---  | |  __/ |  __/\__ \ (_| (_) | |_) |  __/
---  |_|\___|_|\___||___/\___\___/| .__/ \___|
---                               |_|
---  The tool for searching things
-
-local telescope = require("telescope")
-local telescope_opts = { noremap = true, silent = true }
-
-local telescope_bindings = {
-    [""] = "builtin",
-    f = "file_browser",
-    g = "live_grep",
-    b = "buffers",
-    h = "help_tags",
-    j = "jump_list",
-    s = "current_buffer_fuzzy_find",
-    m = "man_pages",
-    r = "lsp_references",
-    d = "lsp_definitions",
-    c = "colorscheme"
-}
-
--- telescope search-under-word (replaces default # action)
-vim.keymap.set("n", "#", "<Cmd>Telescope grep_string<CR>")
-
-for postfix_key, cmd in pairs(telescope_bindings) do
-    vim.keymap.set("n", "<leader>t" .. postfix_key, "<cmd>Telescope " .. cmd .. " theme=ivy<CR>", telescope_opts)
-end
-
-
-local open_dotfiles = function(cwd)
-    return function()
-        require("telescope.builtin").find_files({
-            cwd = cwd,
-            theme = require("telescope.themes").get_ivy()
-        })
-    end
-end
-
-vim.keymap.set("n", "<leader>tn", open_dotfiles("$NEOHOME"), telescope_opts)
-vim.keymap.set("n", "<leader>tz", open_dotfiles("$ZSH"), telescope_opts)
-
-
-telescope.setup({
-    defaults = {
-        path_display = { shorten = 2 },
-    },
-    extensions = {
-        file_browser = {
-            hijack_netrw = true
-        }
-    }
-})
-
-telescope.load_extension("fzf")
-telescope.load_extension("file_browser")
-
--- _____                   _ _   _
---|_   _| __ ___  ___  ___(_) |_| |_ ___ _ __
---  | || '__/ _ \/ _ \/ __| | __| __/ _ \ '__|
---  | || | |  __/  __/\__ \ | |_| ||  __/ |
---  |_||_|  \___|\___||___/_|\__|\__\___|_|
-
-local treesitter = require("nvim-treesitter.configs")
-treesitter.setup({
-    ensure_installed = {
-        "bash",
-        "comment",
-        "python",
-        "json",
-        "lua",
-        "yaml",
-        "vim",
-    },
-    highlight = {
-        enable = true,
-    },
-    incremental_selection = {
-        enable = false,
-    },
-    indent = {
-        enable = true,
-    },
-    playground = {
-        enable = true,
-        disable = {},
-        updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-        persist_queries = false, -- Whether the query persists across vim sessions
-        keybindings = {
-            toggle_query_editor = 'o',
-            toggle_hl_groups = 'i',
-            toggle_injected_languages = 't',
-            toggle_anonymous_nodes = 'a',
-            toggle_language_display = 'I',
-            focus_language = 'f',
-            unfocus_language = 'F',
-            update = 'R',
-            goto_node = '<cr>',
-            show_help = '?',
-        },
-    }
-})
-
 -- _ __ ___ (_)___  ___
 -- | '_ ` _ \| / __|/ __|
 -- | | | | | | \__ \ (__
@@ -586,8 +329,17 @@ set backup
 set noswapfile
 ]]
 
--- require("lsp")
---require("tele-scope")
---require("sitter")
---require("tree")
-require("notes")
+-- Defines an "inspector" function for inspecting lua objects
+function _G.put(...)
+    local objects = {}
+    for i = 1, select("#", ...) do
+        local v = select(i, ...)
+        table.insert(objects, vim.inspect(v))
+    end
+
+    print(table.concat(objects, "\n"))
+    return ...
+end
+
+require("aw.lsp")
+require("aw.notes")
