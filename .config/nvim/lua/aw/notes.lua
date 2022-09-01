@@ -8,4 +8,3 @@ vim.cmd([[
 
   let g:vimwiki_list = [main_wiki]
 ]])
-

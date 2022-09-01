@@ -7,7 +7,7 @@
 --  The tool for searching things
 
 local telescope = require("telescope")
-local telescope_opts = { noremap = true, silent = true }
+local opts = { noremap = true, silent = true }
 
 local telescope_bindings = {
     [""] = "builtin",
@@ -20,32 +20,28 @@ local telescope_bindings = {
     m = "man_pages",
     r = "lsp_references",
     d = "lsp_definitions",
-    c = "colorscheme"
+    c = "colorscheme",
 }
 
 -- telescope search-under-word (replaces default # action)
 vim.keymap.set("n", "#", "<Cmd>Telescope grep_string<CR>")
 
 for postfix_key, cmd in pairs(telescope_bindings) do
-    vim.keymap.set("n", "<leader>t" .. postfix_key, "<cmd>Telescope " .. cmd .. " <CR>", telescope_opts)
+    vim.keymap.set("n", "<leader>t" .. postfix_key, "<cmd>Telescope " .. cmd .. " <CR>", opts)
 end
-
 
 local open_dotfiles = function(cwd)
     return function()
-        require("telescope.builtin").find_files(
-            {
-                require("telescope.themes").get_ivy(),
-                cwd = cwd
-            }
-        )
+        require("telescope.builtin").find_files({
+            require("telescope.themes").get_ivy(),
+            cwd = cwd,
+        })
         -- something like vim.fn['cd'](cwd) maybe? but needs to be on the action?
     end
 end
 
-vim.keymap.set("n", "<leader>tn", open_dotfiles("$NEOHOME"), telescope_opts)
-vim.keymap.set("n", "<leader>tz", open_dotfiles("$ZSH"), telescope_opts)
-
+vim.keymap.set("n", "<leader>tn", open_dotfiles("$NEOHOME"), opts)
+vim.keymap.set("n", "<leader>tz", open_dotfiles("$ZSH"), opts)
 
 telescope.setup({
     defaults = {
@@ -53,9 +49,9 @@ telescope.setup({
     },
     extensions = {
         file_browser = {
-            hijack_netrw = true
-        }
-    }
+            hijack_netrw = true,
+        },
+    },
 })
 
 telescope.load_extension("fzf")
