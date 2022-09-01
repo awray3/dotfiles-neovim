@@ -220,8 +220,6 @@ vim.opt.expandtab = true
 vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.autoindent = true
-vim.opt.cursorline = false
-vim.opt.cmdheight = 1
 vim.opt.autochdir = false
 vim.opt.completeopt = { "menu", "preview", "noselect" }
 
