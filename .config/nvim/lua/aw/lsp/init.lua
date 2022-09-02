@@ -16,3 +16,5 @@ local configured_servers = { "null-ls", "sumneko-lua", "pyright" }
 for _, server in ipairs(configured_servers) do
     require("aw.lsp." .. server)
 end
+
+require('aw.completion')

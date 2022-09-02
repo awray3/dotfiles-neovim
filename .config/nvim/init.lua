@@ -111,9 +111,16 @@ require("packer").startup({
             "jose-elias-alvarez/null-ls.nvim",
             requires = { "nvim-lua/plenary.nvim" },
         })
-        -- use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
-        -- use 'hrsh7th/cmp-nvim-lsp'
-        -- use 'williamboman/nvim-lsp-installer'
+
+        use({
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "hrsh7th/cmp-cmdline",
+            "hrsh7th/nvim-cmp",
+        })
+
+        use({ "L3MON4D3/LuaSnip" })
 
         --  _   _ ___
         -- | | | |_ _|
@@ -177,7 +184,7 @@ require("packer").startup({
 
         use({
             "quarto-dev/quarto-vim",
-            requires = { { "vim-pandoc/vim-pandoc-syntax" } },
+            requires = { "vim-pandoc/vim-pandoc-syntax" },
             ft = { "quarto" },
         })
         use({

@@ -11,7 +11,7 @@ local opts = { noremap = true, silent = true }
 
 local telescope_bindings = {
     [""] = "builtin",
-    f = "file_browser",
+    f = "find_files",
     g = "live_grep",
     b = "buffers",
     h = "help_tags",
@@ -21,6 +21,7 @@ local telescope_bindings = {
     r = "lsp_references",
     d = "lsp_definitions",
     c = "colorscheme",
+    k = "file_browser",
 }
 
 -- telescope search-under-word (replaces default # action)
