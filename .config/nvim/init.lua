@@ -97,6 +97,15 @@ require("packer").startup({
             end,
         })
 
+        -- makes scrolling smoother
+        use({
+            "declancm/cinnamon.nvim",
+            config = function()
+                require("cinnamon").setup({
+                    extra_keymaps = true,
+                })
+            end,
+        })
         --  _     ____  ____
         -- | |   / ___||  _ \
         -- | |   \___ \| |_) |
@@ -266,7 +275,7 @@ vim.opt.termguicolors = true
 vim.keymap.set("i", "jk", "<ESC>")
 
 -- folding
-vim.keymap.set("n", ",", "za")
+vim.keymap.set("n", ",", "za", { noremap = true })
 
 -- window switching
 vim.keymap.set("n", "<C-h>", "<C-w>h")
