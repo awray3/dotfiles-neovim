@@ -222,13 +222,20 @@ require("packer").startup({
             config = function()
                 vim.cmd([[
                   let g:vimwiki_global_ext = 0
+
                   let main_wiki = {}
                   let main_wiki.path = '~/Documents/vimwiki/'
                   let main_wiki.syntax = 'markdown'
                   let main_wiki.ext = '.md'
                   let main_wiki.links_space_char = '_'
 
-                  let g:vimwiki_list = [main_wiki]
+                  let writing_wiki = {}
+                  let writing_wiki.path = '~/Documents/writing/'
+                  let writing_wiki.syntax = 'markdown'
+                  let writing_wiki.ext = '.md'
+                  let writing_wiki.links_space_char = '_'
+
+                  let g:vimwiki_list = [main_wiki, writing_wiki]
                 ]])
             end,
         })
@@ -323,6 +330,9 @@ vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 vim.keymap.set("n", "<Leader>o", "<cmd>only<CR>")
 
 vim.keymap.set("n", "<C-T>", "<cmd>tabnew<CR>")
+
+-- cd to current file's directory
+vim.keymap.set("n", "<Leader>cd", "<Cmd>cd %:p:h<CR>", { noremap = true })
 
 --           _
 --  ___ ___ | | ___  _ __ ___

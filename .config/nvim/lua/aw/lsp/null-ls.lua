@@ -38,16 +38,14 @@ null_ls.setup({
         builtins.diagnostics.markdownlint.with({
             filetypes = writing_filetypes,
         }),
-        builtins.formatting.prettierd.with({
-            env = { PRETTIERD_DEFAULT_CONFIG = vim.fn.expand("$NEOHOME/.prettierrc.yml") },
-            filetypes = writing_filetypes,
+        builtins.formatting.prettier.with({
+            extra_args = { "--prose-wrap", "always" },
         }),
+
+        -- lua formatting
         builtins.formatting.stylua,
 
         -- sh and zsh
         builtins.diagnostics.zsh,
-
-        -- json
-        builtins.jq,
     },
 })
