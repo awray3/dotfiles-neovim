@@ -9,17 +9,17 @@ end
 
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<Leader>Nd", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "<Leader>nd", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
+--local opts = { noremap = true, silent = true }
+--vim.keymap.set("n", "<Leader>Nd", vim.diagnostic.goto_prev, opts)
+--vim.keymap.set("n", "<Leader>nd", vim.diagnostic.goto_next, opts)
+--vim.keymap.set("n", "<Leader>q", vim.diagnostic.setloclist, opts)
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
     define_signs()
     -- Enable completion triggered by <c-x><c-o>
-    vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+    --vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
     -- Mappings.
     -- See `:help vim.lsp.*` for documentation on any of the below functions
@@ -36,7 +36,14 @@ local on_attach = function(client, bufnr)
     vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
     vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
     vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-    -- vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+
+    -- trouble keymaps
+    vim.keymap.set("n", "<Leader>qq", "<Cmd>TroubleToggle<CR>", bufopts)
+    vim.keymap.set("n", "<Leader>qw", "<Cmd>TroubleToggle workspace_diagnostics<CR>", bufopts)
+    vim.keymap.set("n", "<Leader>qd", "<Cmd>TroubleToggle document_diagnostics<CR>", bufopts)
+    vim.keymap.set("n", "<Leader>ql", "<Cmd>TroubleToggle loclist<CR>", bufopts)
+    vim.keymap.set("n", "<Leader>qf", "<Cmd>TroubleToggle quickfix<CR>", bufopts)
+    vim.keymap.set("n", "<Leader>qr", "<Cmd>TroubleToggle lsp_references<CR>", bufopts)
 
     vim.api.nvim_create_autocmd("CursorHold", {
         buffer = bufnr,
@@ -56,9 +63,8 @@ end
 
 M.on_attach = on_attach
 
-
 -- completion capabilities
-local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 M.capabilities = capabilities
 
 return M

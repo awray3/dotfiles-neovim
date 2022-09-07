@@ -15,11 +15,11 @@ local luasnip = require("luasnip")
 --luasnip.snippets = require("my-snippets")
 
 cmp.setup({
-    --snippet = {
-    --expand = function(args)
-    --luasnip.lsp_expand(args.body) -- For `luasnip` users.
-    --end,
-    --},
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body) -- For `luasnip` users.
+        end,
+    },
     mapping = {
         ["<C-d>"] = cmp.config.disable,
         ["<C-f>"] = cmp.config.disable,
@@ -63,7 +63,7 @@ cmp.setup({
     },
     sources = cmp.config.sources({
         { name = "nvim_lsp" },
-        --{ name = "luasnip" },
+        { name = "luasnip" },
     }, {
         { name = "buffer" },
         { name = "path" },
@@ -72,6 +72,7 @@ cmp.setup({
 
 -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline("/", {
+    mapping = cmp.mapping.preset.cmdline(),
     sources = {
         { name = "buffer" },
     },
@@ -79,5 +80,6 @@ cmp.setup.cmdline("/", {
 
 -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline(":", {
+    mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
 })
