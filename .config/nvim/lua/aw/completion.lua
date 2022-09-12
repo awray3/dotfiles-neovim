@@ -10,9 +10,12 @@ local has_words_before = function()
 end
 
 local luasnip = require("luasnip")
+local my_snippets = require("my-snippets")
 
 -- loads the snippets into luasnip
---luasnip.snippets = require("my-snippets")
+luasnip.add_snippets = { "python", my_snippets.python }
+luasnip.add_snippets = { "markdown", my_snippets.markdown }
+luasnip.add_snippets = { "quarto", my_snippets.quarto }
 
 cmp.setup({
     snippet = {
@@ -65,7 +68,6 @@ cmp.setup({
         { name = "nvim_lsp" },
         { name = "luasnip" },
     }, {
-        { name = "buffer" },
         { name = "path" },
     }),
 })
@@ -83,3 +85,11 @@ cmp.setup.cmdline(":", {
     mapping = cmp.mapping.preset.cmdline(),
     sources = cmp.config.sources({ { name = "path" } }, { { name = "cmdline" } }),
 })
+
+local setup_buffer_completion = function()
+    cmp.setup.buffer({
+        sources = {
+            name = "buffer",
+        },
+    })
+end

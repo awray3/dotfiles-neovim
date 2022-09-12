@@ -93,7 +93,9 @@ require("packer").startup({
         use({
             "windwp/nvim-autopairs",
             config = function()
-                require("nvim-autopairs").setup({})
+                local autopairs = require("nvim-autopairs")
+                autopairs.setup({})
+                autopairs.remove_rule("`")
             end,
         })
 
@@ -174,22 +176,22 @@ require("packer").startup({
                 require("aw.ui.lualine")
             end,
         })
-        use({
-            "kdheepak/tabline.nvim",
-            config = function()
-                require("aw.ui.tabline")
-            end,
-            requires = {
-                {
-                    "nvim-lualine/lualine.nvim",
-                    opt = true,
-                },
-                {
-                    "kyazdani42/nvim-web-devicons",
-                    opt = true,
-                },
-            },
-        })
+        --use({
+        --"kdheepak/tabline.nvim",
+        --config = function()
+        --require("aw.ui.tabline")
+        --end,
+        --requires = {
+        --{
+        --"nvim-lualine/lualine.nvim",
+        --opt = true,
+        --},
+        --{
+        --"kyazdani42/nvim-web-devicons",
+        --opt = true,
+        --},
+        --},
+        --})
         -- Add indentation guides even on blank lines
         use("lukas-reineke/indent-blankline.nvim")
         -- Add git related info in the signs columns and popups

@@ -8,7 +8,7 @@ local builtins = require("null-ls.builtins")
 local writing_filetypes = { "markdown", "vimwiki" }
 
 null_ls.setup({
-    debug = false,
+    debug = true,
     on_attach = function(client, bufnr)
         common.on_attach(client, bufnr)
         -- null-ls formatting

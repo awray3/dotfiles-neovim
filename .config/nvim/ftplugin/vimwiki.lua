@@ -5,5 +5,5 @@ vim.bo.shiftwidth = 2
 vim.bo.autoindent = true
 
 vim.cmd([[
-    set filetype=markdown
+    set filetype=vimwiki.markdown
 ]])
