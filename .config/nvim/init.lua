@@ -85,12 +85,6 @@ require("packer").startup({
         end
 
         use({
-            "antoinemadec/FixCursorHold.nvim",
-            config = function()
-                vim.g.cursorhold_updatetime = 100
-            end,
-        })
-        use({
             "windwp/nvim-autopairs",
             config = function()
                 local autopairs = require("nvim-autopairs")
@@ -176,22 +170,20 @@ require("packer").startup({
                 require("aw.ui.lualine")
             end,
         })
-        --use({
-        --"kdheepak/tabline.nvim",
-        --config = function()
-        --require("aw.ui.tabline")
-        --end,
-        --requires = {
-        --{
-        --"nvim-lualine/lualine.nvim",
-        --opt = true,
-        --},
-        --{
-        --"kyazdani42/nvim-web-devicons",
-        --opt = true,
-        --},
-        --},
-        --})
+
+        use({
+            "levouh/tint.nvim",
+            config = function()
+                require("tint").setup()
+            end,
+        })
+        use({
+            "kdheepak/tabline.nvim",
+            config = function()
+                require("aw.ui.tabline")
+            end,
+        })
+
         -- Add indentation guides even on blank lines
         use("lukas-reineke/indent-blankline.nvim")
         -- Add git related info in the signs columns and popups
