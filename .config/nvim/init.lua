@@ -199,9 +199,8 @@ require("packer").startup({
         -- |_| |_|\___/ \__\___||___/
 
         use({
-            "quarto-dev/quarto-vim",
-            requires = { "vim-pandoc/vim-pandoc-syntax" },
-            ft = { "quarto" },
+            "quarto-dev/quarto-nvim",
+            requires = { "neovim/nvim-lspconfig" },
         })
         use({
             "iamcco/markdown-preview.nvim",
