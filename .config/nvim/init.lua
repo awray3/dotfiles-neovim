@@ -61,7 +61,26 @@ require("packer").startup({
             run = "make",
         })
         use({ "nvim-telescope/telescope-file-browser.nvim" })
-
+        use({
+            "pwntester/octo.nvim",
+            requires = {
+                "nvim-lua/plenary.nvim",
+                "nvim-telescope/telescope.nvim",
+                "kyazdani42/nvim-web-devicons",
+            },
+            config = function()
+                require("aw.octo")
+            end,
+        })
+        use({
+            "s1n7ax/nvim-terminal",
+            config = function()
+                vim.o.hidden = true
+                require("nvim-terminal").setup({
+                    toggle_keymap = "<leader>j",
+                })
+            end,
+        })
         use("tpope/vim-surround")
         use({
             "kyazdani42/nvim-tree.lua",
@@ -200,7 +219,8 @@ require("packer").startup({
 
         use({
             "quarto-dev/quarto-nvim",
-            requires = { "neovim/nvim-lspconfig" },
+            requires = { "neovim/nvim-lspconfig", "vim-pandoc/vim-pandoc-syntax" },
+            ft = "quarto",
         })
         use({
             "iamcco/markdown-preview.nvim",
@@ -322,10 +342,19 @@ vim.keymap.set("n", "<Leader>d", ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 -- Make the buffer the only buffer on the screen
 vim.keymap.set("n", "<Leader>o", "<cmd>only<CR>")
 
+-- New Tab
 vim.keymap.set("n", "<C-T>", "<cmd>tabnew<CR>")
 
 -- cd to current file's directory
 vim.keymap.set("n", "<Leader>cd", "<Cmd>cd %:p:h<CR>", { noremap = true })
+
+-- Not sure why this doesn't work in lua. Says something about invalid escape sequence.
+-- It makes Escape get you into normal mode in a neovim terminal
+vim.cmd([[
+  tnoremap <Esc> <C-\><C-n>
+]])
+
+--vim.keymap.set("n", "<Leader>j", ":sp :belowright term<CR>")
 
 --           _
 --  ___ ___ | | ___  _ __ ___
