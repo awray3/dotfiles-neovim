@@ -11,6 +11,13 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
+-- clear any loaded packages, so submodules refresh with config refresh.
+for k, _ in pairs(package.loaded) do
+    if string.match(k, "^aw") then
+        package.loaded[k] = nil
+    end
+end
+
 --  ____  _             _
 -- |  _ \| |_   _  __ _(_)_ __  ___
 -- | |_) | | | | |/ _` | | '_ \/ __|
@@ -62,6 +69,7 @@ require("packer").startup({
             config = function()
                 require("aw.octo")
             end,
+            -- Notes: this is for adding Github issues to my telescope selector
         })
         use({
             "s1n7ax/nvim-terminal",
@@ -71,6 +79,7 @@ require("packer").startup({
                     toggle_keymap = "<leader>j",
                 })
             end,
+            -- a simple, flip open and close terminal just like vscode has.
         })
         use("tpope/vim-surround")
         use({
@@ -200,6 +209,13 @@ require("packer").startup({
         use({
             "lewis6991/gitsigns.nvim",
             requires = { "nvim-lua/plenary.nvim" },
+        })
+
+        use({
+            "rcarriga/nvim-notify",
+            config = function()
+                vim.notify = require("notify")
+            end,
         })
 
         --              _
@@ -348,11 +364,28 @@ vim.cmd([[
 --vim.keymap.set("n", "<Leader>j", ":sp :belowright term<CR>")
 
 -- This will clear when you hit ESC in normal mode
+--
 vim.keymap.set("n", "<Esc>", function()
+    require("trouble").close()
     require("notify").dismiss() -- clear notifications
     vim.cmd.nohlsearch() -- clear highlights
     vim.cmd.echo() -- clear short-message
+
+    require("nvim-terminal").DefaultTerminal:close()
 end)
+
+-- Reload config function
+function _G.ReloadConfig()
+    for name, _ in pairs(package.loaded) do
+        if name:match("^aw") then
+            package.loaded[name] = nil
+        end
+    end
+
+    dofile(vim.env.MYVIMRC)
+    vim.notify("Nvim configuration reloaded!")
+end
+vim.keymap.set("n", "<Leader><Leader>r", "<Cmd>lua ReloadConfig()<CR>", { silent = true, noremap = true })
 
 --           _
 --  ___ ___ | | ___  _ __ ___
