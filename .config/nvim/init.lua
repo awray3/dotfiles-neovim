@@ -166,8 +166,16 @@ require("packer").startup({
         use({ "L3MON4D3/LuaSnip" })
 
         use(
-            { "mfussenegger/nvim-dap" }
-            -- main debugger plugin
+            {
+                "mfussenegger/nvim-dap",
+                config = function()
+                    require("aw.nvim-dap")
+                end,
+                --requires = {
+                --"mfussenegger/nvim-dap-python",
+                --}
+            }
+            -- main debugger plugin and python debugger
         )
 
         --  _   _ ___
