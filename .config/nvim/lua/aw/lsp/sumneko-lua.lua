@@ -5,6 +5,8 @@ local on_attach = function(client, bufnr)
     common.on_attach(client, bufnr)
     client.server_capabilities.document_formatting = false
     client.server_capabilities.document_range_formatting = false
+
+    vim.notify("Loaded Lua language server!")
 end
 
 local capabilities = common.capabilities

@@ -159,6 +159,11 @@ require("packer").startup({
 
         use({ "L3MON4D3/LuaSnip" })
 
+        use(
+            { "mfussenegger/nvim-dap" }
+            -- main debugger plugin
+        )
+
         --  _   _ ___
         -- | | | |_ _|
         -- | | | || |
@@ -385,6 +390,9 @@ function _G.ReloadConfig()
     vim.notify("Nvim configuration reloaded!")
 end
 vim.keymap.set("n", "<Leader><Leader>r", "<Cmd>lua ReloadConfig()<CR>", { silent = true, noremap = true })
+
+vim.keymap.set("n", "<Leader><Leader>s", "<Cmd>PackerSync<CR>", { noremap = true })
+
 --           _
 --  ___ ___ | | ___  _ __ ___
 -- / __/ _ \| |/ _ \| '__/ __|
