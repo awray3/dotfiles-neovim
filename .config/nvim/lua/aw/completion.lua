@@ -10,7 +10,7 @@ local has_words_before = function()
 end
 
 local luasnip = require("luasnip")
-local my_snippets = require("my-snippets")
+local my_snippets = require("aw.snippets")
 
 -- loads the snippets into luasnip
 luasnip.add_snippets = { "python", my_snippets.python }
