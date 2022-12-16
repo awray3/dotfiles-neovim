@@ -11,15 +11,6 @@ if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
     vim.fn.execute("!git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end
 
---local packer_group = vim.api.nvim_create_augroup('Packer', {
---    clear = true
---})
---vim.api.nvim_create_autocmd('BufWritePost', {
---    command = 'source <afile> | PackerCompile',
---    group = packer_group,
---    pattern = 'init.lua'
---})
-
 --  ____  _             _
 -- |  _ \| |_   _  __ _(_)_ __  ___
 -- | |_) | | | | |/ _` | | '_ \/ __|
@@ -355,6 +346,13 @@ vim.cmd([[
 ]])
 
 --vim.keymap.set("n", "<Leader>j", ":sp :belowright term<CR>")
+
+-- This will clear when you hit ESC in normal mode
+vim.keymap.set("n", "<Esc>", function()
+    require("notify").dismiss() -- clear notifications
+    vim.cmd.nohlsearch() -- clear highlights
+    vim.cmd.echo() -- clear short-message
+end)
 
 --           _
 --  ___ ___ | | ___  _ __ ___
