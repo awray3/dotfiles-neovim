@@ -22,19 +22,18 @@ octo.setup({
             create_label = { lhs = "<Leader>lc", desc = "create label" },
             add_label = { lhs = "<Leader>la", desc = "add label" },
             remove_label = { lhs = "<Leader>ld", desc = "remove label" },
-            goto_issue = { lhs = "<Leader>gi", desc = "navigate to a local repo issue" },
-            add_comment = { lhs = "<Leader>ca", desc = "add comment" },
+            add_comment = { lhs = "<Leader>ac", desc = "add comment" },
             delete_comment = { lhs = "<Leader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
             prev_comment = { lhs = "[c", desc = "go to previous comment" },
-            react_hooray = { lhs = "<Leader>rp", desc = "add/remove 🎉 reaction" },
+            react_hooray = { lhs = "<Leader>ry", desc = "add/remove 🎉 reaction" },
+            react_laugh = { lhs = "<Leader>rl", desc = "add/remove 😄 reaction" },
+            react_confused = { lhs = "<Leader>rc", desc = "add/remove 😕 reaction" },
             --react_heart = { lhs = "<Leader>rh", desc = "add/remove ❤️ reaction" },
             --react_eyes = { lhs = "<Leader>re", desc = "add/remove 👀 reaction" },
             --react_thumbs_up = { lhs = "<Leader>r+", desc = "add/remove 👍 reaction" },
             --react_thumbs_down = { lhs = "<Leader>r-", desc = "add/remove 👎 reaction" },
             --react_rocket = { lhs = "<Leader>rr", desc = "add/remove 🚀 reaction" },
-            react_laugh = { lhs = "<Leader>rl", desc = "add/remove 😄 reaction" },
-            react_confused = { lhs = "<Leader>rc", desc = "add/remove 😕 reaction" },
         },
     },
 })
@@ -43,4 +42,4 @@ local opts = { noremap = true }
 
 vim.keymap.set("n", "<Leader>li", "<Cmd>Octo issue list<CR>", opts)
 vim.keymap.set("n", "<Leader>nc", "<Cmd>Octo comment add<CR>", opts)
-vim.keymap.set("n", "<Leader>lc", "<Cmd>Octo issue create<CR>", opts)
+vim.keymap.set("n", "<Leader>nc", "<Cmd>Octo issue create<CR>", opts)
