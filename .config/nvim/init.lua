@@ -364,7 +364,6 @@ vim.cmd([[
 --vim.keymap.set("n", "<Leader>j", ":sp :belowright term<CR>")
 
 -- This will clear when you hit ESC in normal mode
---
 vim.keymap.set("n", "<Esc>", function()
     require("trouble").close()
     require("notify").dismiss() -- clear notifications
@@ -386,7 +385,6 @@ function _G.ReloadConfig()
     vim.notify("Nvim configuration reloaded!")
 end
 vim.keymap.set("n", "<Leader><Leader>r", "<Cmd>lua ReloadConfig()<CR>", { silent = true, noremap = true })
-
 --           _
 --  ___ ___ | | ___  _ __ ___
 -- / __/ _ \| |/ _ \| '__/ __|
