@@ -43,3 +43,4 @@ local opts = { noremap = true }
 
 vim.keymap.set("n", "<Leader>li", "<Cmd>Octo issue list<CR>", opts)
 vim.keymap.set("n", "<Leader>nc", "<Cmd>Octo comment add<CR>", opts)
+vim.keymap.set("n", "<Leader>lc", "<Cmd>Octo issue create<CR>", opts)
