@@ -4,6 +4,12 @@
 -- | | | | | | |_  | | |_| | (_| |
 -- |_|_| |_|_|\__(_)_|\__,_|\__,_|
 
+
+-- per the nvim-tree docs, this should come at the very top of the neovim configuration
+-- to avoid race conditions with netrw
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- bootstrap and setup packer
 local install_path = vim.fn.stdpath("data") .. "/site/pack/packer/start/packer.nvim"
 
