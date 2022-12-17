@@ -4,21 +4,21 @@
 --  | || | |  __/  __/\__ \ | |_| ||  __/ |
 --  |_||_|  \___|\___||___/_|\__|\__\___|_|
 
-local treesitter = require("nvim-treesitter.configs")
-local playground = require("aw.treesitter.playground")
-local textobjects = require("aw.treesitter.textobjects")
-local parsers = require("nvim-treesitter.parsers")
+local treesitter = require 'nvim-treesitter.configs'
+local playground = require 'aw.treesitter.playground'
+local textobjects = require 'aw.treesitter.textobjects'
+local parsers = require 'nvim-treesitter.parsers'
 
-treesitter.setup({
+treesitter.setup {
     ensure_installed = {
-        "bash",
-        "comment",
-        "python",
-        "json",
-        "lua",
-        "yaml",
-        "vim",
-        "markdown",
+        'bash',
+        'comment',
+        'python',
+        'json',
+        'lua',
+        'yaml',
+        'vim',
+        'markdown',
     },
     highlight = {
         enable = true,
@@ -31,6 +31,6 @@ treesitter.setup({
     },
     playground = playground,
     textobjects = textobjects,
-})
+}
 
-parsers.filetype_to_parsername.quarto = "markdown" -- the someft filetype will use the python parser and queries.
+parsers.filetype_to_parsername.quarto = 'markdown' -- the someft filetype will use the python parser and queries.

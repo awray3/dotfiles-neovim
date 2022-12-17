@@ -4,6 +4,6 @@ vim.bo.softtabstop = 2
 vim.bo.shiftwidth = 2
 vim.bo.autoindent = true
 
-vim.cmd([[
+vim.cmd [[
     set filetype=vimwiki.markdown
-]])
+]]

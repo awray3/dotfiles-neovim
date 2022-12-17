@@ -1,4 +1,4 @@
-local ls = require("luasnip")
+local ls = require 'luasnip'
 local s = ls.snippet
 local t = ls.text_node
 local i = ls.insert_node
@@ -10,26 +10,26 @@ local i = ls.insert_node
 --local events = require("luasnip.util.events")
 
 local python_snippets = {
-    s("__name", t({ 'if __name__=="__main__":', "    pass" })),
+    s('__name', t { 'if __name__=="__main__":', '    pass' }),
 }
 
 local code_fence = s({
-    trig = "```",
-    name = "code fence",
+    trig = '```',
+    name = 'code fence',
 }, {
-    t({ "```{" }),
+    t { '```{' },
     i(1),
-    t("}", i(0)),
-    t("```"),
+    t('}', i(0)),
+    t '```',
 })
 
 local markdown_or_vimwiki = {
-    s("link", {
-        t("["),
+    s('link', {
+        t '[',
         i(1),
-        t("]("),
+        t '](',
         i(2),
-        t(")"),
+        t ')',
         i(0),
     }),
     code_fence,
@@ -70,11 +70,11 @@ local snippets_to_return = {
 }
 
 local function load_unversioned_snippets()
-    require("my-unversioned-snippets")
+    require 'my-unversioned-snippets'
 end
 
 if pcall(load_unversioned_snippets) then
-    return merge_snippet_tables(snippets_to_return, require("my-unversioned-snippets"))
+    return merge_snippet_tables(snippets_to_return, require 'my-unversioned-snippets')
 else
     return snippets_to_return
 end

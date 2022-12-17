@@ -1,24 +1,24 @@
-local lspconfig = require("lspconfig")
-local common = require("aw.lsp.common")
+local lspconfig = require 'lspconfig'
+local common = require 'aw.lsp.common'
 
 local on_attach = function(client, bufnr)
     common.on_attach(client, bufnr)
     client.server_capabilities.document_formatting = false
     client.server_capabilities.document_range_formatting = false
 
-    vim.notify("Loaded Lua language server!")
+    vim.notify 'Loaded Lua language server!'
 end
 
 local capabilities = common.capabilities
 
 -- Lua Language Server
-lspconfig.sumneko_lua.setup({
+lspconfig.sumneko_lua.setup {
     on_attach = on_attach,
     capabilities = capabilities,
     settings = {
         Lua = {
             diagnostics = {
-                globals = { "vim", "bufnr" },
+                globals = { 'vim', 'bufnr' },
             },
             format = {
                 enable = false,
@@ -27,8 +27,8 @@ lspconfig.sumneko_lua.setup({
                 enable = true,
             },
             runtime = {
-                version = "LuaJIT",
+                version = 'LuaJIT',
             },
         },
     },
-})
+}
