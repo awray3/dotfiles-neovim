@@ -13,7 +13,6 @@ local telescope_bindings = {
     [""] = "builtin",
     f = "find_files",
     g = "live_grep",
-    b = "buffers",
     h = "help_tags",
     j = "jump_list",
     s = "current_buffer_fuzzy_find",
@@ -43,6 +42,7 @@ end
 
 vim.keymap.set("n", "<leader>tn", open_dotfiles("$NEOHOME"), opts)
 vim.keymap.set("n", "<leader>tz", open_dotfiles("$ZSH"), opts)
+vim.keymap.set("n", "<leader>fd", "<Cmd>Telescope buffers<CR>", opts)
 
 telescope.setup({
     defaults = {

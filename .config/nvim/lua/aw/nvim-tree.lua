@@ -20,10 +20,29 @@ nvim_tree.setup({
         add_trailing = true,
         highlight_opened_files = "2",
         root_folder_modifier = ":~",
-        special_files = { "README.md", "justfile", ".justfile", "makefile", "tasks.py", "init.lua", "index.md", "index.qmd", ".workspace", "Dockerfile", "dockerfile", "docker-compose.*yml" },
+        special_files = {
+            "README.md",
+            "justfile",
+            ".justfile",
+            "makefile",
+            "tasks.py",
+            "init.lua",
+            "index.md",
+            "index.qmd",
+            ".workspace",
+            "Dockerfile",
+            "dockerfile",
+            "docker-compose.*yml",
+        },
         highlight_git = true,
         group_empty = true,
-        symlink_destination = false
+        symlink_destination = false,
+    },
+    filters = {
+        custom = {
+            "__pycache__",
+            ".ipynb_checkpoints",
+        },
     },
 })
 

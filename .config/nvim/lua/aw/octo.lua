@@ -19,11 +19,11 @@ octo.setup({
             --copy_url = { lhs = "<C-y>", desc = "copy url to system clipboard" },
             --add_assignee = { lhs = "<Leader>aa", desc = "add assignee" },
             --remove_assignee = { lhs = "<Leader>ad", desc = "remove assignee" },
-            create_label = { lhs = "<Leader>lc", desc = "create label" },
-            add_label = { lhs = "<Leader>la", desc = "add label" },
-            remove_label = { lhs = "<Leader>ld", desc = "remove label" },
-            add_comment = { lhs = "<Leader>ac", desc = "add comment" },
-            delete_comment = { lhs = "<Leader>cd", desc = "delete comment" },
+            --create_label = { lhs = "<Leader>lc", desc = "create label" },
+            --add_label = { lhs = "<Leader>la", desc = "add label" },
+            --remove_label = { lhs = "<Leader>ld", desc = "remove label" },
+            --add_comment = { lhs = "<Leader>ac", desc = "add comment" },
+            --delete_comment = { lhs = "<Leader>cd", desc = "delete comment" },
             next_comment = { lhs = "]c", desc = "go to next comment" },
             prev_comment = { lhs = "[c", desc = "go to previous comment" },
             react_hooray = { lhs = "<Leader>ry", desc = "add/remove 🎉 reaction" },
@@ -42,4 +42,4 @@ local opts = { noremap = true }
 
 vim.keymap.set("n", "<Leader>li", "<Cmd>Octo issue list<CR>", opts)
 vim.keymap.set("n", "<Leader>nc", "<Cmd>Octo comment add<CR>", opts)
-vim.keymap.set("n", "<Leader>nc", "<Cmd>Octo issue create<CR>", opts)
+vim.keymap.set("n", "<Leader>lc", "<Cmd>Octo issue create<CR>", opts)
