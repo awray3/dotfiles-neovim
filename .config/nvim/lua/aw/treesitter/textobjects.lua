@@ -1,21 +1,47 @@
-local select = {
-    enable = true,
-    lookahead = true,
-    keymaps = {
-        ['af'] = { query = '@function.outer', desc = 'Select around a function' },
-        ['if'] = { query = '@function.inner', desc = 'Select function body' },
-        ['ac'] = { query = '@class.outer', desc = 'Select around class definition' },
-        ['ic'] = { query = '@class.inner', desc = 'Select inside class definition' },
-        ['ia'] = { query = '@parameter.inner', desc = 'Select parameter' },
-        ['aa'] = { query = '@parameter.outer', desc = 'Select around parameter' },
+-- treesitter textobjects
+local M = {
+    select = {
+        enable = true,
+        lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+        keymaps = {
+            -- You can use the capture groups defined in textobjects.scm
+            ['aa'] = '@parameter.outer',
+            ['ia'] = '@parameter.inner',
+            ['af'] = '@function.outer',
+            ['if'] = '@function.inner',
+            ['ac'] = '@class.outer',
+            ['ic'] = '@class.inner',
+        },
     },
-
-    selection_modes = {
-        ['@parameter.inner'] = 'v',
-        ['@parameter.outer'] = 'v',
+    move = {
+        enable = true,
+        set_jumps = true, -- whether to set jumps in the jumplist
+        goto_next_start = {
+            [']m'] = '@function.outer',
+            [']]'] = '@class.outer',
+        },
+        goto_next_end = {
+            [']M'] = '@function.outer',
+            [']['] = '@class.outer',
+        },
+        goto_previous_start = {
+            ['[m'] = '@function.outer',
+            ['[['] = '@class.outer',
+        },
+        goto_previous_end = {
+            ['[M'] = '@function.outer',
+            ['[]'] = '@class.outer',
+        },
+    },
+    swap = {
+        enable = true,
+        swap_next = {
+            ['<leader>a'] = '@parameter.inner',
+        },
+        swap_previous = {
+            ['<leader>A'] = '@parameter.inner',
+        },
     },
 }
 
-return {
-    select = select,
-}
+return M

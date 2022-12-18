@@ -19,7 +19,7 @@ nvim_tree.setup {
         },
         add_trailing = true,
         highlight_opened_files = '2',
-        root_folder_modifier = ':~',
+        root_folder_label = ':~',
         special_files = {
             'README.md',
             'justfile',

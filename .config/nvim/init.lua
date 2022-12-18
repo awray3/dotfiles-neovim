@@ -11,16 +11,12 @@ vim.g.loaded_netrwPlugin = 1
 
 -- bootstrap and setup packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
+local is_bootstrap = false
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+    is_bootstrap = true
     vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
-end
-
--- clear any loaded packages, so submodules refresh with config refresh.
-for k, _ in pairs(package.loaded) do
-    if string.match(k, '^aw') then
-        package.loaded[k] = nil
-    end
+    vim.cmd [[ packadd packer.nvim ]]
 end
 
 --  ____  _             _
@@ -87,20 +83,50 @@ require('packer').startup {
             -- a simple, flip open and close terminal just like vscode has.
         }
         use 'tpope/vim-surround'
+        use 'tpope/vim-sleuth' -- Detect tabstop and shiftwidth automatically
+
         use {
             'kyazdani42/nvim-tree.lua',
             requires = { 'kyazdani42/nvim-web-devicons' },
-            tag = 'nightly',
             config = function()
                 require 'aw.nvim-tree'
             end,
         }
+
         use {
-            'preservim/nerdcommenter',
+            'numToStr/Comment.nvim',
             config = function()
-                vim.g.NERDCreateDefaultMappings = false
-                vim.keymap.set('n', '<Leader>/', '<Plug>NERDCommenterToggle', { noremap = true })
-                vim.keymap.set('v', '<Leader>/', '<Plug>NERDCommenterToggle', { noremap = true })
+                require('Comment').setup {
+                    padding = true,
+                    sticky = true,
+                    toggler = {
+                        line = 'gcc',
+                        block = 'gbc', --
+                    },
+                    opleader = {
+                        ---Line-comment keymap
+                        line = 'gc',
+                        ---Block-comment keymap
+                        block = 'gb',
+                    },
+                    ---LHS of extra mappings
+                    extra = {
+                        ---Add comment on the line above
+                        above = 'gcO',
+                        ---Add comment on the line below
+                        below = 'gco',
+                        ---Add comment at the end of line
+                        eol = 'gcA',
+                    },
+                    ---Enable keybindings
+                    ---NOTE: If given `false` then the plugin won't create any mappings
+                    mappings = {
+                        ---Operator-pending mapping; `gcc` `gbc` `gc[count]{motion}` `gb[count]{motion}`
+                        basic = true,
+                        ---Extra mapping; `gco`, `gcO`, `gcA`
+                        extra = true,
+                    },
+                }
             end,
         }
 
@@ -147,6 +173,14 @@ require('packer').startup {
 
         use {
             'neovim/nvim-lspconfig',
+            requires = {
+                -- Automatically install LSPs to stdpath for neovim
+                'williamboman/mason.nvim',
+                'williamboman/mason-lspconfig.nvim',
+
+                -- Useful status updates for LSP
+                'j-hui/fidget.nvim',
+            },
         }
 
         use {
@@ -221,10 +255,11 @@ require('packer').startup {
         -- Add indentation guides even on blank lines
         use 'lukas-reineke/indent-blankline.nvim'
         -- Add git related info in the signs columns and popups
-        use {
-            'lewis6991/gitsigns.nvim',
-            requires = { 'nvim-lua/plenary.nvim' },
-        }
+
+        -- Git related plugins
+        use 'tpope/vim-fugitive'
+        use 'tpope/vim-rhubarb'
+        use { 'lewis6991/gitsigns.nvim', tag = 'release' }
 
         use {
             'rcarriga/nvim-notify',
@@ -274,6 +309,10 @@ require('packer').startup {
                 ]]
             end,
         }
+
+        if is_bootstrap then
+            require('packer').sync()
+        end
     end,
     config = {
         display = {
@@ -281,6 +320,23 @@ require('packer').startup {
         },
     },
 }
+
+if is_bootstrap then
+    print '=================================='
+    print '    Plugins are being installed'
+    print '    Wait until Packer completes,'
+    print '       then restart nvim'
+    print '=================================='
+    return
+end
+
+-- Automatically source and re-compile packer whenever you save this init.lua
+local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
+vim.api.nvim_create_autocmd('BufWritePost', {
+    command = 'source <afile> | PackerCompile',
+    group = packer_group,
+    pattern = vim.fn.expand '$MYVIMRC',
+})
 
 --           _   _   _
 --  ___  ___| |_| |_(_)_ __   __ _ ___
@@ -307,7 +363,8 @@ vim.opt.softtabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.autoindent = true
 vim.opt.autochdir = false
-vim.opt.completeopt = { 'menu', 'preview', 'noselect' }
+--vim.opt.completeopt = { 'menu', 'preview', 'noselect' }
+vim.opt.completeopt = 'menuone,noselect'
 
 -- folds
 vim.opt.foldmethod = 'expr'
@@ -330,6 +387,9 @@ vim.opt.smartcase = true
 -- colors
 vim.opt.termguicolors = true
 
+vim.o.updatetime = 250
+vim.wo.signcolumn = 'yes'
+
 -- _
 -- | | _____ _   _ _ __ ___   __ _ _ __  ___
 -- | |/ / _ \ | | | '_ ` _ \ / _` | '_ \/ __|
@@ -340,6 +400,16 @@ vim.opt.termguicolors = true
 -- Keybindings work like this:
 -- vim.keymap.set({mode}, {lhs}, {rhs}, {opts})
 --
+
+vim.cmd [[
+        map <Down> <C-E>
+        map <Up> <C-Y>
+        map <S-Down> j
+        map <S-Up> k
+    ]]
+
+--Clear space so that leader can use it
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- remap esc
 vim.keymap.set('i', 'jk', '<ESC>')
@@ -352,8 +422,6 @@ vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('n', '<C-j>', '<C-w>j')
 vim.keymap.set('n', '<C-k>', '<C-w>k')
 vim.keymap.set('n', '<C-l>', '<C-w>l')
-
-vim.keymap.set('n', '<Leader>nh', '<Cmd>nohlsearch<CR>')
 
 -- Make Y behave like the other capitals
 vim.keymap.set('n', 'Y', 'y$')
@@ -390,12 +458,12 @@ end)
 
 -- Reload config function
 function _G.ReloadConfig()
+    -- clear any loaded packages, so submodules refresh with config refresh.
     for name, _ in pairs(package.loaded) do
         if name:match '^aw' then
             package.loaded[name] = nil
         end
     end
-
     dofile(vim.env.MYVIMRC)
     vim.notify 'Nvim configuration reloaded!'
 end
@@ -471,4 +539,158 @@ function _G.put(...)
     return ...
 end
 
-require 'aw.lsp'
+-- Temporarily disabling so to use mason.
+-- require 'aw.lsp'
+--
+-- LSP settings.
+--  This function gets run when an LSP connects to a particular buffer.
+local on_attach = function(_, bufnr)
+  -- NOTE: Remember that lua is a real programming language, and as such it is possible
+  -- to define small helper and utility functions so you don't have to repeat yourself
+  -- many times.
+  --
+  -- In this case, we create a function that lets us more easily define mappings specific
+  -- for LSP related items. It sets the mode, buffer and description for us each time.
+  local nmap = function(keys, func, desc)
+    if desc then
+      desc = 'LSP: ' .. desc
+    end
+
+    vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+  end
+
+  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+
+  nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
+  nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
+  nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
+  nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+  nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+
+  -- See `:help K` for why this keymap
+  nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
+  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+
+  -- Lesser used LSP functionality
+  nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+  nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
+  nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
+  nmap('<leader>wl', function()
+    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  end, '[W]orkspace [L]ist Folders')
+
+  -- Create a command `:Format` local to the LSP buffer
+  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+    if vim.lsp.buf.format then
+      vim.lsp.buf.format()
+    elseif vim.lsp.buf.formatting then
+      vim.lsp.buf.formatting()
+    end
+  end, { desc = 'Format current buffer with LSP' })
+end
+
+-- Mason setup
+require('mason').setup()
+
+-- Enable the following language servers
+-- Feel free to add/remove any LSPs that you want here. They will automatically be installed
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'sumneko_lua' }
+
+
+-- Ensure the servers above are installed
+require('mason-lspconfig').setup {
+  ensure_installed = servers,
+}
+
+-- nvim-cmp supports additional completion capabilities
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+
+for _, lsp in ipairs(servers) do
+  require('lspconfig')[lsp].setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+  }
+end
+
+
+-- Turn on lsp status information
+require('fidget').setup()
+
+
+-- Example custom configuration for lua
+--
+-- Make runtime files discoverable to the server
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, 'lua/?.lua')
+table.insert(runtime_path, 'lua/?/init.lua')
+
+require('lspconfig').sumneko_lua.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT)
+        version = 'LuaJIT',
+        -- Setup your lua path
+        path = runtime_path,
+      },
+      diagnostics = {
+        globals = { 'vim' },
+      },
+      workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = { enable = false },
+    },
+  },
+}
+
+-- Completion is setup here
+-- nvim-cmp setup
+local cmp = require 'cmp'
+local luasnip = require 'luasnip'
+
+cmp.setup {
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert {
+    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    },
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+  },
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+  },
+}
+
+-- The line beneath this is called `modeline`. See `:help modeline`
+-- vim: ts=2 sts=2 sw=2 et
