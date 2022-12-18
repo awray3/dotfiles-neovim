@@ -86,14 +86,6 @@ require('packer').startup {
         use 'tpope/vim-sleuth' -- Detect tabstop and shiftwidth automatically
 
         use {
-            'kyazdani42/nvim-tree.lua',
-            requires = { 'kyazdani42/nvim-web-devicons' },
-            config = function()
-                require 'aw.nvim-tree'
-            end,
-        }
-
-        use {
             'numToStr/Comment.nvim',
             config = function()
                 require('Comment').setup {
@@ -242,9 +234,10 @@ require('packer').startup {
         use {
             'levouh/tint.nvim',
             config = function()
-                require('tint').setup()
+                require('tint').setup({})
             end,
         }
+
         use {
             'kdheepak/tabline.nvim',
             config = function()
@@ -440,9 +433,10 @@ vim.keymap.set('n', '<Leader>cd', '<Cmd>cd %:p:h<CR>', { noremap = true })
 
 -- Not sure why this doesn't work in lua. Says something about invalid escape sequence.
 -- It makes Escape get you into normal mode in a neovim terminal
-vim.cmd [[
-  tnoremap <Esc> <C-\><C-n>
-]]
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
+--vim.cmd [[
+--  tnoremap <Esc> <C-\><C-n>
+--]]
 
 --vim.keymap.set("n", "<Leader>j", ":sp :belowright term<CR>")
 
@@ -541,8 +535,22 @@ end
 
 -- Temporarily disabling so to use mason.
 -- require 'aw.lsp'
---
--- LSP settings.
+--#region
+--#region
+-- _     ____  ____
+--| |   / ___||  _ \
+--| |   \___ \| |_) |
+--| |___ ___) |  __/
+--|_____|____/|_|
+-- anguage erver rotocol
+-- tags: LSP, lsp, language server protocos
+
+local function define_signs()
+    vim.fn.sign_define('DiagnosticSignError', { text = '', texthl = 'DiagnosticSignError' })
+    vim.fn.sign_define('DiagnosticSignHint', { text = '', texthl = 'DiagnosticSignHint' })
+    vim.fn.sign_define('DiagnosticSignInfo', { text = '', texthl = 'DiagnosticSignInfo' })
+    vim.fn.sign_define('DiagnosticSignWarn', { text = '', texthl = 'DiagnosticSignWarn' })
+end
 --  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
   -- NOTE: Remember that lua is a real programming language, and as such it is possible
