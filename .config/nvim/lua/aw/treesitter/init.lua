@@ -10,21 +10,18 @@ local textobjects = require 'aw.treesitter.textobjects'
 local parsers = require 'nvim-treesitter.parsers'
 
 treesitter.setup {
-    ensure_installed = {
-        'bash',
-        'comment',
-        'python',
-        'json',
-        'lua',
-        'yaml',
-        'vim',
-        'markdown',
-    },
+    ensure_installed = { 'help', 'bash', 'comment', 'python', 'json', 'lua', 'yaml', 'vim', 'markdown' },
     highlight = {
         enable = true,
     },
     incremental_selection = {
-        enable = false,
+        enable = true,
+        keymaps = {
+            init_selection = '<c-space>',
+            node_incremental = '<c-space>',
+            scope_incremental = '<c-s>',
+            node_decremental = '<c-backspace>',
+        },
     },
     indent = {
         enable = true,
@@ -33,4 +30,5 @@ treesitter.setup {
     textobjects = textobjects,
 }
 
-parsers.filetype_to_parsername.quarto = 'markdown' -- the someft filetype will use the python parser and queries.
+-- the quarto filetype will use the python parser and queries.
+parsers.filetype_to_parsername.quarto = 'markdown'
