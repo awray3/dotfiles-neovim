@@ -42,7 +42,7 @@ end
 
 -- vim.keymap.set('n', '<leader>tn', open_dotfiles '$NEOHOME', opts)
 vim.keymap.set('n', "<leader>in", "<Cmd>e $NEOHOME/init.lua<CR> <Cmd>cd $NEOHOME<CR>", opts)
-vim.keymap.set('n', '<leader>tz', open_dotfiles '$ZSH', opts)
+vim.keymap.set('n', "<leader>iz", "<Cmd>e $ZSH/zshrc.zsh<CR> <Cmd>cd $ZSH<CR>", opts)
 vim.keymap.set('n', '<leader>fd', '<Cmd>Telescope buffers<CR>', opts)
 
 telescope.setup {
