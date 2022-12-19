@@ -92,14 +92,14 @@ require('packer').startup {
                     padding = true,
                     sticky = true,
                     toggler = {
-                        line = 'gcc',
-                        block = 'gbc', --
+                        line = '<leader>=',
+                        block = '<leader>-',
                     },
                     opleader = {
                         ---Line-comment keymap
-                        line = 'gc',
+                        line = '<leader>=',
                         ---Block-comment keymap
-                        block = 'gb',
+                        block = '<leader>-',
                     },
                     ---LHS of extra mappings
                     extra = {
@@ -190,16 +190,6 @@ require('packer').startup {
 
         use { 'L3MON4D3/LuaSnip' }
 
-        use {
-            'mfussenegger/nvim-dap',
-            config = function()
-                require 'aw.nvim-dap'
-            end,
-            --requires = {
-            --"mfussenegger/nvim-dap-python",
-            --}
-        }
-
         --  _   _ ___
         -- | | | |_ _|
         -- | | | || |
@@ -234,7 +224,7 @@ require('packer').startup {
         use {
             'levouh/tint.nvim',
             config = function()
-                require('tint').setup({})
+                require('tint').setup {}
             end,
         }
 
@@ -431,26 +421,24 @@ vim.keymap.set('n', '<C-T>', '<cmd>tabnew<CR>')
 -- cd to current file's directory
 vim.keymap.set('n', '<Leader>cd', '<Cmd>cd %:p:h<CR>', { noremap = true })
 
--- Not sure why this doesn't work in lua. Says something about invalid escape sequence.
 -- It makes Escape get you into normal mode in a neovim terminal
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", {noremap=true})
---vim.cmd [[
---  tnoremap <Esc> <C-\><C-n>
---]]
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 
---vim.keymap.set("n", "<Leader>j", ":sp :belowright term<CR>")
-
--- This will clear when you hit ESC in normal mode
+-- This will clear things when you hit ESC in normal mode.
 vim.keymap.set('n', '<Esc>', function()
+
     require('trouble').close()
     require('notify').dismiss() -- clear notifications
     vim.cmd.nohlsearch() -- clear highlights
     vim.cmd.echo() -- clear short-message
 
-    require('nvim-terminal').DefaultTerminal:close()
+    NTGlobal["terminal"]:close()
 end)
 
--- Reload config function
+-- Reload config function. It will:
+-- clear loaded submodules in the $NEOHOME/lua folder (ensuring they reload);
+-- stop all lsp clients;
+-- resource init.lua and all lua submodules as needed.
 function _G.ReloadConfig()
     -- clear any loaded packages, so submodules refresh with config refresh.
     for name, _ in pairs(package.loaded) do
@@ -458,11 +446,17 @@ function _G.ReloadConfig()
             package.loaded[name] = nil
         end
     end
+
+    -- stop all clients.
+    vim.notify("Stopping All Lsp Clients...")
+    vim.lsp.stop_client(vim.lsp.get_active_clients())
+
+    vim.notify("Sourcing $NEOHOME/init.lua...")
     dofile(vim.env.MYVIMRC)
     vim.notify 'Nvim configuration reloaded!'
 end
-vim.keymap.set('n', '<Leader><Leader>r', '<Cmd>lua ReloadConfig()<CR>', { silent = true, noremap = true })
 
+vim.keymap.set('n', '<Leader><Leader>r', '<Cmd>lua ReloadConfig()<CR>', { silent = true, noremap = true })
 vim.keymap.set('n', '<Leader><Leader>s', '<Cmd>PackerSync<CR>', { noremap = true })
 
 --           _
@@ -533,172 +527,4 @@ function _G.put(...)
     return ...
 end
 
--- Temporarily disabling so to use mason.
--- require 'aw.lsp'
---#region
---#region
--- _     ____  ____
---| |   / ___||  _ \
---| |   \___ \| |_) |
---| |___ ___) |  __/
---|_____|____/|_|
--- anguage erver rotocol
--- tags: LSP, lsp, language server protocos
-
-local function define_signs()
-    vim.fn.sign_define('DiagnosticSignError', { text = '', texthl = 'DiagnosticSignError' })
-    vim.fn.sign_define('DiagnosticSignHint', { text = '', texthl = 'DiagnosticSignHint' })
-    vim.fn.sign_define('DiagnosticSignInfo', { text = '', texthl = 'DiagnosticSignInfo' })
-    vim.fn.sign_define('DiagnosticSignWarn', { text = '', texthl = 'DiagnosticSignWarn' })
-end
---  This function gets run when an LSP connects to a particular buffer.
-local on_attach = function(_, bufnr)
-  -- NOTE: Remember that lua is a real programming language, and as such it is possible
-  -- to define small helper and utility functions so you don't have to repeat yourself
-  -- many times.
-  --
-  -- In this case, we create a function that lets us more easily define mappings specific
-  -- for LSP related items. It sets the mode, buffer and description for us each time.
-  local nmap = function(keys, func, desc)
-    if desc then
-      desc = 'LSP: ' .. desc
-    end
-
-    vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
-  end
-
-  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-
-  nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
-  nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-  nmap('gI', vim.lsp.buf.implementation, '[G]oto [I]mplementation')
-  nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
-  nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-  nmap('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-  -- See `:help K` for why this keymap
-  nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
-  nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
-
-  -- Lesser used LSP functionality
-  nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-  nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-  nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-  nmap('<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, '[W]orkspace [L]ist Folders')
-
-  -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-    if vim.lsp.buf.format then
-      vim.lsp.buf.format()
-    elseif vim.lsp.buf.formatting then
-      vim.lsp.buf.formatting()
-    end
-  end, { desc = 'Format current buffer with LSP' })
-end
-
--- Mason setup
-require('mason').setup()
-
--- Enable the following language servers
--- Feel free to add/remove any LSPs that you want here. They will automatically be installed
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'sumneko_lua' }
-
-
--- Ensure the servers above are installed
-require('mason-lspconfig').setup {
-  ensure_installed = servers,
-}
-
--- nvim-cmp supports additional completion capabilities
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
-for _, lsp in ipairs(servers) do
-  require('lspconfig')[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
-end
-
-
--- Turn on lsp status information
-require('fidget').setup()
-
-
--- Example custom configuration for lua
---
--- Make runtime files discoverable to the server
-local runtime_path = vim.split(package.path, ';')
-table.insert(runtime_path, 'lua/?.lua')
-table.insert(runtime_path, 'lua/?/init.lua')
-
-require('lspconfig').sumneko_lua.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT)
-        version = 'LuaJIT',
-        -- Setup your lua path
-        path = runtime_path,
-      },
-      diagnostics = {
-        globals = { 'vim' },
-      },
-      workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-      -- Do not send telemetry data containing a randomized but unique identifier
-      telemetry = { enable = false },
-    },
-  },
-}
-
--- Completion is setup here
--- nvim-cmp setup
-local cmp = require 'cmp'
-local luasnip = require 'luasnip'
-
-cmp.setup {
-  snippet = {
-    expand = function(args)
-      luasnip.lsp_expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert {
-    ['<C-d>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<CR>'] = cmp.mapping.confirm {
-      behavior = cmp.ConfirmBehavior.Replace,
-      select = true,
-    },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'luasnip' },
-  },
-}
-
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+require 'aw.lsp'
