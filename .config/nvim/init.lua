@@ -82,6 +82,23 @@ require('packer').startup {
             end,
             -- a simple, flip open and close terminal just like vscode has.
         }
+        -- repl plugin
+        -- Options are: iron.nvim, vim-jukit
+        use {
+            'luk400/vim-jukit',
+            config = function ()
+
+                function _G.df_columns ()
+                    local visual_selection = vim.call("jukit#util#get_visual_selection")
+                    local cmd = visual_selection .. '.columns'
+                    -- might also be {cmd} or {cmd = cmd} if this doesn't work
+                    vim.call("jukit#send#send_to_split", cmd)
+                end
+
+                vim.keymap.set("v", "<Leader>fc", "<Cmd>lua df_columns()<CR>", { desc="Data[F]rame [C]columns"})
+
+            end
+        }
         use 'tpope/vim-surround'
         use 'tpope/vim-sleuth' -- Detect tabstop and shiftwidth automatically
 
@@ -156,6 +173,11 @@ require('packer').startup {
                     -- refer to the configuration section below
                 }
             end,
+        }
+        use { "shortcuts/no-neck-pain.nvim", tag = "*",
+            config = function()
+                require("no-neck-pain").setup()
+            end
         }
         --  _     ____  ____
         -- | |   / ___||  _ \

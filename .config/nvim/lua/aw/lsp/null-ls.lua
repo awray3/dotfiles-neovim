@@ -17,7 +17,9 @@ local sources = {
     builtins.diagnostics.cppcheck,
 
     -- python-related
-    builtins.diagnostics.flake8,
+    builtins.diagnostics.flake8.with({
+        extra_args = {'--ignore=E265,W391,E303'}
+    }),
     builtins.formatting.isort,
     builtins.formatting.black,
 
