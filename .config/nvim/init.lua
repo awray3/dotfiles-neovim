@@ -86,24 +86,76 @@ require('packer').startup {
         -- Options are: iron.nvim, vim-jukit
         use {
             'luk400/vim-jukit',
-            config = function ()
+            config = function()
 
                 -- function for getting the column names of the dataframe
-                function _G.df_columns ()
-                    local visual_selection = vim.call("jukit#util#get_visual_selection")
-                    local cmd = visual_selection .. '.columns'
+                function _G.df_columns()
+
+                    local word_under_cursor = vim.fn.expand("<cword>")
+                    local cmd = "list(" ..word_under_cursor .. '.columns' .. ")"
                     -- might also be {cmd} or {cmd = cmd} if this doesn't work
                     vim.call("jukit#send#send_to_split", cmd)
                 end -- end df_cols
 
-                vim.keymap.set("v", "<Leader>fc", "<Cmd>lua df_columns()<CR>", { desc="Data[F]rame [C]columns"})
+
+                -- I want to define my own mappings for things I use. A lot of jukit's commands
+                -- overwrite stuff I use.
+                vim.g.jukit_mappings = 0
+
+                local jukit_map = function(lhs, rhs, desc, mode)
+                    mode = mode or "n"
+                    local ju_desc = "JuKit: " .. desc
+                    vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, desc = ju_desc })
+                end
+                jukit_map("<Leader>dc", "<Cmd>lua df_columns()<CR>", "[D]ataframe [C]columns" )
+
+                ---------- Managing Jukit Windows
+
+                -- Opens a new output window and executes the command specified in `g:jukit_shell_cmd`
+                jukit_map("<Leader>os", ":call jukit#splits#output()<cr>", "[O]utput [Split]")
+
+                -- Opens a new output window without executing any command
+                jukit_map("<Leader>ts", ":call jukit#splits#term()<cr>", "[T]erminal [Split]")
+
+                -- Opens a new output-history window, where saved ipython outputs are displayed
+                jukit_map("<Leader>hs", ":call jukit#splits#history()<cr>", "[H]i[S]tory")
+
+                -- Opens a new output-history window, where saved ipython outputs are displayed
+                jukit_map('<Leader>ohs', ":call jukit#splits#output_and_history()<cr>", "[O]utput and [H]i[S]tory")
+
+                -- closes the history window
+                jukit_map('<Leader>ch', ":call jukit#splits#close_history()<cr>", "[C]lose [H]istory")
+
+                -- close the output window
+                jukit_map("<Leader>co", ":call jukit#splits#close_output_split()<cr>", "[C]lose [Output] window")
+
+                --------- Sending Code
+
+                -- sends the current cell to output split
+                jukit_map("<Leader>,", ":call jukit#send#section(0)<cr>", "Send Selection")
+
+                -- same, but keeps the cursor in the same cell
+                jukit_map("<Leader><Leader>,", ":call jukit#send#section(1)<cr>", "Send Selection")
+
+                -- send a line
+                jukit_map("<cr>", ":call jukit#send#line()<cr>", "Send line")
+
+                -- send selection
+                jukit_map("<cr>", ":call jukit#send#selection()<cr>", "Send Selection", "v")
+
+                -- send all cells
+                jukit_map("<Leader>all", ":call jukit#send#all()<cr>", "Send all cells")
+
 
                 if terminal_is_kitty then
                     vim.g.jukit_terminal = 'kitty'
                     vim.g.jukit_output_new_os_window = 1
-                    vim.g.jukit_mpl_style = vim.call("jukit#util#plugin_path", {}) .. '/helpers/matplotlib-backend-kitty/backend.mplstyle'
+                    vim.g.jukit_mpl_style = vim.call("jukit#util#plugin_path", {}) ..
+                        '/helpers/matplotlib-backend-kitty/backend.mplstyle'
+                    vim.g.jukit_inline_plotting = 1
                 else
                     vim.g.jukit_mpl_style = ''
+                    vim.g.jukit_inline_plotting = 0
                 end -- endif
 
             end, -- end jukit configuration
@@ -442,7 +494,7 @@ vim.keymap.set('n', '<C-l>', '<C-w>l')
 vim.keymap.set('n', 'Y', 'y$')
 
 -- insert the current date in long format
-vim.keymap.set('n', '<Leader>d', ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
+vim.keymap.set('n', '<Leader>da', ":0r!date +'\\%A, \\%B \\%d, \\%Y'<CR>")
 
 -- Make the buffer the only buffer on the screen
 vim.keymap.set('n', '<Leader>o', '<cmd>only<CR>')
