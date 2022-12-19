@@ -88,17 +88,27 @@ require('packer').startup {
             'luk400/vim-jukit',
             config = function ()
 
+                -- function for getting the column names of the dataframe
                 function _G.df_columns ()
                     local visual_selection = vim.call("jukit#util#get_visual_selection")
                     local cmd = visual_selection .. '.columns'
                     -- might also be {cmd} or {cmd = cmd} if this doesn't work
                     vim.call("jukit#send#send_to_split", cmd)
-                end
+                end -- end df_cols
 
                 vim.keymap.set("v", "<Leader>fc", "<Cmd>lua df_columns()<CR>", { desc="Data[F]rame [C]columns"})
 
-            end
+                if terminal_is_kitty then
+                    vim.g.jukit_terminal = 'kitty'
+                    vim.g.jukit_output_new_os_window = 1
+                    vim.g.jukit_mpl_style = vim.call("jukit#util#plugin_path", {}) .. '/helpers/matplotlib-backend-kitty/backend.mplstyle'
+                else
+                    vim.g.jukit_mpl_style = ''
+                end -- endif
+
+            end, -- end jukit configuration
         }
+
         use 'tpope/vim-surround'
         use 'tpope/vim-sleuth' -- Detect tabstop and shiftwidth automatically
 
@@ -136,7 +146,7 @@ require('packer').startup {
                         extra = true,
                     },
                 }
-            end,
+            end, -- end comment.nvim configuration
         }
 
         if terminal_is_kitty then
@@ -441,7 +451,7 @@ vim.keymap.set('n', '<Leader>o', '<cmd>only<CR>')
 vim.keymap.set('n', '<C-T>', '<cmd>tabnew<CR>')
 
 -- cd to current file's directory
-vim.keymap.set('n', '<Leader>cd', '<Cmd>cd %:p:h<CR>', { noremap = true })
+vim.keymap.set('n', '<Leader><Leader>cd', '<Cmd>cd %:p:h<CR>', { noremap = true })
 
 -- It makes Escape get you into normal mode in a neovim terminal
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
