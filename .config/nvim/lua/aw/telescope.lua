@@ -30,37 +30,50 @@ local opts = { noremap = true, silent = true }
 --vim.keymap.set('n', '<leader>t' .. postfix_key, '<cmd>Telescope ' .. cmd .. ' <CR>', opts)
 --end
 
-local open_dotfiles = function(cwd)
-    return function()
-        require('telescope.builtin').find_files {
-            require('telescope.themes').get_ivy(),
-            cwd = cwd,
-        }
-        -- something like vim.fn['cd'](cwd) maybe? but needs to be on the action?
-    end
-end
+-- local open_dotfiles = function(cwd)
+--     return function()
+--         require('telescope.builtin').find_files {
+--             require('telescope.themes').get_ivy(),
+--             cwd = cwd,
+--         }
+--         -- something like vim.fn['cd'](cwd) maybe? but needs to be on the action?
+--     end
+-- end
 
 -- vim.keymap.set('n', '<leader>tn', open_dotfiles '$NEOHOME', opts)
-vim.keymap.set('n', "<leader>in", "<Cmd>e $NEOHOME/init.lua<CR> <Cmd>cd $NEOHOME<CR>", opts)
-vim.keymap.set('n', "<leader>iz", "<Cmd>e $ZSH/zshrc.zsh<CR> <Cmd>cd $ZSH<CR>", opts)
-vim.keymap.set('n', '<leader>fd', '<Cmd>Telescope buffers<CR>', opts)
 
 telescope.setup {
     defaults = {
         path_display = { shorten = 2 },
     },
+    pickers = {
+        find_files = {
+            find_command = {
+                "rg", "-L", "--hidden", "--files"
+            }
+        }
+    },
     extensions = {
         file_browser = {
             hijack_netrw = true,
+            respect_gitignore = false,
+            grouped = true,
+            depth = false,
+            hidden = true,
         },
     },
 }
 
-pcall(telescope.load_extension, 'fzf')
+--pcall(telescope.load_extension, 'fzf')
 pcall(telescope.load_extension, 'file_browser')
 
+-- telescope keybindings
+
+vim.keymap.set('n', "<leader>in", "<Cmd>e $NEOHOME/init.lua<CR> <Cmd>cd $NEOHOME<CR>", opts)
+vim.keymap.set('n', "<leader>iz", "<Cmd>e $ZSH/zshrc.zsh<CR> <Cmd>cd $ZSH<CR>", opts)
+vim.keymap.set('n', '<C-n>', '<Cmd>Telescope file_browser<CR>', opts)
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>fb', require('telescope.builtin').buffers, { desc = '[fb] [f]ind existing [b]uffers' })
 
 vim.keymap.set('n', '<leader>/', function()
     -- You can pass additional configuration to telescope to change theme, layout, etc.

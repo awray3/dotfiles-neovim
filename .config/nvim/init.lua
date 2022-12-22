@@ -86,17 +86,17 @@ require('packer').startup {
         -- Options are: iron.nvim, vim-jukit
         use {
             'luk400/vim-jukit',
+            ft = { 'julia', 'python' },
             config = function()
 
                 -- function for getting the column names of the dataframe
                 function _G.df_columns()
 
                     local word_under_cursor = vim.fn.expand("<cword>")
-                    local cmd = "list(" ..word_under_cursor .. '.columns' .. ")"
+                    local cmd = "list(" .. word_under_cursor .. '.columns' .. ")"
                     -- might also be {cmd} or {cmd = cmd} if this doesn't work
                     vim.call("jukit#send#send_to_split", cmd)
                 end -- end df_cols
-
 
                 -- I want to define my own mappings for things I use. A lot of jukit's commands
                 -- overwrite stuff I use.
@@ -107,7 +107,7 @@ require('packer').startup {
                     local ju_desc = "JuKit: " .. desc
                     vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, desc = ju_desc })
                 end
-                jukit_map("<Leader>dc", "<Cmd>lua df_columns()<CR>", "[D]ataframe [C]columns" )
+                jukit_map("<Leader>dc", "<Cmd>lua df_columns()<CR>", "[D]ataframe [C]columns")
 
                 ---------- Managing Jukit Windows
 
@@ -335,6 +335,8 @@ require('packer').startup {
             end,
         }
 
+        use { 'NoahTheDuke/vim-just', ft = { 'just' } }
+
         --              _
         --  _ __   ___ | |_ ___  ___
         -- | '_ \ / _ \| __/ _ \/ __|
@@ -343,8 +345,29 @@ require('packer').startup {
 
         use {
             'quarto-dev/quarto-nvim',
-            requires = { 'neovim/nvim-lspconfig', 'vim-pandoc/vim-pandoc-syntax' },
+            requires = { 'neovim/nvim-lspconfig' },
             ft = 'quarto',
+            config = function()
+                require('quarto').setup(
+                    {
+                        debug = false,
+                        lspFeatures = {
+                            enabled = true,
+                            languages = { 'r', 'python', 'julia' },
+                            diagnostics = {
+                                enabled = true,
+                                triggers = { "BufEnter", "InsertLeave", "TextChanged" }
+                            },
+                            cmpSource = {
+                                enabled = true,
+                            },
+                        },
+                        keymap = {
+                            hover = 'K',
+                        }
+                    }
+                )
+            end
         }
         use {
             'iamcco/markdown-preview.nvim',
