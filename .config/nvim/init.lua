@@ -88,14 +88,12 @@ require('packer').startup {
             'luk400/vim-jukit',
             ft = { 'julia', 'python' },
             config = function()
-
                 -- function for getting the column names of the dataframe
                 function _G.df_columns()
-
-                    local word_under_cursor = vim.fn.expand("<cword>")
-                    local cmd = "list(" .. word_under_cursor .. '.columns' .. ")"
+                    local word_under_cursor = vim.fn.expand '<cword>'
+                    local cmd = 'list(' .. word_under_cursor .. '.columns' .. ')'
                     -- might also be {cmd} or {cmd = cmd} if this doesn't work
-                    vim.call("jukit#send#send_to_split", cmd)
+                    vim.call('jukit#send#send_to_split', cmd)
                 end -- end df_cols
 
                 -- I want to define my own mappings for things I use. A lot of jukit's commands
@@ -103,61 +101,59 @@ require('packer').startup {
                 vim.g.jukit_mappings = 0
 
                 local jukit_map = function(lhs, rhs, desc, mode)
-                    mode = mode or "n"
-                    local ju_desc = "JuKit: " .. desc
+                    mode = mode or 'n'
+                    local ju_desc = 'JuKit: ' .. desc
                     vim.keymap.set(mode, lhs, rhs, { noremap = true, silent = true, desc = ju_desc })
                 end
-                jukit_map("<Leader>dc", "<Cmd>lua df_columns()<CR>", "[D]ataframe [C]columns")
+                jukit_map('<Leader>dc', '<Cmd>lua df_columns()<CR>', '[D]ataframe [C]columns')
 
                 ---------- Managing Jukit Windows
 
                 -- Opens a new output window and executes the command specified in `g:jukit_shell_cmd`
-                jukit_map("<Leader>os", ":call jukit#splits#output()<cr>", "[O]utput [Split]")
+                jukit_map('<Leader>os', ':call jukit#splits#output()<cr>', '[O]utput [Split]')
 
                 -- Opens a new output window without executing any command
-                jukit_map("<Leader>ts", ":call jukit#splits#term()<cr>", "[T]erminal [Split]")
+                jukit_map('<Leader>ts', ':call jukit#splits#term()<cr>', '[T]erminal [Split]')
 
                 -- Opens a new output-history window, where saved ipython outputs are displayed
-                jukit_map("<Leader>hs", ":call jukit#splits#history()<cr>", "[H]i[S]tory")
+                jukit_map('<Leader>hs', ':call jukit#splits#history()<cr>', '[H]i[S]tory')
 
                 -- Opens a new output-history window, where saved ipython outputs are displayed
-                jukit_map('<Leader>ohs', ":call jukit#splits#output_and_history()<cr>", "[O]utput and [H]i[S]tory")
+                jukit_map('<Leader>ohs', ':call jukit#splits#output_and_history()<cr>', '[O]utput and [H]i[S]tory')
 
                 -- closes the history window
-                jukit_map('<Leader>ch', ":call jukit#splits#close_history()<cr>", "[C]lose [H]istory")
+                jukit_map('<Leader>ch', ':call jukit#splits#close_history()<cr>', '[C]lose [H]istory')
 
                 -- close the output window
-                jukit_map("<Leader>co", ":call jukit#splits#close_output_split()<cr>", "[C]lose [Output] window")
+                jukit_map('<Leader>co', ':call jukit#splits#close_output_split()<cr>', '[C]lose [Output] window')
 
                 --------- Sending Code
 
                 -- sends the current cell to output split
-                jukit_map("<Leader>,", ":call jukit#send#section(0)<cr>", "Send Selection")
+                jukit_map('<Leader>,', ':call jukit#send#section(0)<cr>', 'Send Selection')
 
                 -- same, but keeps the cursor in the same cell
-                jukit_map("<Leader><Leader>,", ":call jukit#send#section(1)<cr>", "Send Selection")
+                jukit_map('<Leader><Leader>,', ':call jukit#send#section(1)<cr>', 'Send Selection')
 
                 -- send a line
-                jukit_map("<cr>", ":call jukit#send#line()<cr>", "Send line")
+                jukit_map('<cr>', ':call jukit#send#line()<cr>', 'Send line')
 
                 -- send selection
-                jukit_map("<cr>", ":call jukit#send#selection()<cr>", "Send Selection", "v")
+                jukit_map('<cr>', ':call jukit#send#selection()<cr>', 'Send Selection', 'v')
 
                 -- send all cells
-                jukit_map("<Leader>all", ":call jukit#send#all()<cr>", "Send all cells")
-
+                jukit_map('<Leader>all', ':call jukit#send#all()<cr>', 'Send all cells')
 
                 if terminal_is_kitty then
                     vim.g.jukit_terminal = 'kitty'
                     vim.g.jukit_output_new_os_window = 1
-                    vim.g.jukit_mpl_style = vim.call("jukit#util#plugin_path", {}) ..
+                    vim.g.jukit_mpl_style = vim.call('jukit#util#plugin_path', {}) ..
                         '/helpers/matplotlib-backend-kitty/backend.mplstyle'
                     vim.g.jukit_inline_plotting = 1
                 else
                     vim.g.jukit_mpl_style = ''
                     vim.g.jukit_inline_plotting = 0
                 end -- endif
-
             end, -- end jukit configuration
         }
 
@@ -201,6 +197,19 @@ require('packer').startup {
             end, -- end comment.nvim configuration
         }
 
+        use {
+            "max397574/better-escape.nvim",
+            config = function()
+                require("better_escape").setup(
+                    {
+                        keys = function()
+                            return vim.api.nvim_win_get_cursor(0)[2] > 1 and '<esc>l' or '<esc>'
+                        end,
+                    }
+                )
+            end,
+        }
+
         if terminal_is_kitty then
             use 'knubie/vim-kitty-navigator'
         end
@@ -236,10 +245,12 @@ require('packer').startup {
                 }
             end,
         }
-        use { "shortcuts/no-neck-pain.nvim", tag = "*",
+        use {
+            'shortcuts/no-neck-pain.nvim',
+            tag = '*',
             config = function()
-                require("no-neck-pain").setup()
-            end
+                require('no-neck-pain').setup()
+            end,
         }
         --  _     ____  ____
         -- | |   / ___||  _ \
@@ -281,6 +292,7 @@ require('packer').startup {
         --  \___/|___|
 
         -- colorschemes
+        use 'EdenEast/nightfox.nvim'
         use {
             'sainnhe/everforest',
             config = function()
@@ -348,26 +360,24 @@ require('packer').startup {
             requires = { 'neovim/nvim-lspconfig' },
             ft = 'quarto',
             config = function()
-                require('quarto').setup(
-                    {
-                        debug = false,
-                        lspFeatures = {
+                require('quarto').setup {
+                    debug = false,
+                    lspFeatures = {
+                        enabled = true,
+                        languages = { 'r', 'python', 'julia' },
+                        diagnostics = {
                             enabled = true,
-                            languages = { 'r', 'python', 'julia' },
-                            diagnostics = {
-                                enabled = true,
-                                triggers = { "BufEnter", "InsertLeave", "TextChanged" }
-                            },
-                            cmpSource = {
-                                enabled = true,
-                            },
+                            triggers = { 'BufEnter', 'InsertLeave', 'TextChanged' },
                         },
-                        keymap = {
-                            hover = 'K',
-                        }
-                    }
-                )
-            end
+                        cmpSource = {
+                            enabled = true,
+                        },
+                    },
+                    keymap = {
+                        hover = 'K',
+                    },
+                }
+            end,
         }
         use {
             'iamcco/markdown-preview.nvim',
@@ -487,10 +497,12 @@ vim.wo.signcolumn = 'yes'
 -- |_|\_\___|\__, |_| |_| |_|\__,_| .__/|___/
 --           |___/                |_|
 
--- Keybindings work like this:
+-- Keybindings in lua work like this:
 -- vim.keymap.set({mode}, {lhs}, {rhs}, {opts})
 --
 
+-- this makes the arrow keys scroll the screen instead
+-- of the cursor. Hold shift to go back to cursor.
 vim.cmd [[
         map <Down> <C-E>
         map <Up> <C-Y>
@@ -498,11 +510,8 @@ vim.cmd [[
         map <S-Up> k
     ]]
 
---Clear space so that leader can use it
+--Clear space so that leader can use it? Is this necessary?
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
-
--- remap esc
-vim.keymap.set('i', 'jk', '<ESC>')
 
 -- folding
 vim.keymap.set('n', ',', 'za', { noremap = true })
@@ -533,13 +542,10 @@ vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 
 -- This will clear things when you hit ESC in normal mode.
 vim.keymap.set('n', '<Esc>', function()
-
     require('trouble').close()
     require('notify').dismiss() -- clear notifications
     vim.cmd.nohlsearch() -- clear highlights
     vim.cmd.echo() -- clear short-message
-
-    NTGlobal["terminal"]:close()
 end)
 
 -- Reload config function. It will:
@@ -555,10 +561,10 @@ function _G.ReloadConfig()
     end
 
     -- stop all clients.
-    vim.notify("Stopping All Lsp Clients...")
+    vim.notify 'Stopping All Lsp Clients...'
     vim.lsp.stop_client(vim.lsp.get_active_clients())
 
-    vim.notify("Sourcing $NEOHOME/init.lua...")
+    vim.notify 'Sourcing $NEOHOME/init.lua...'
     dofile(vim.env.MYVIMRC)
     vim.notify 'Nvim configuration reloaded!'
 end
@@ -576,7 +582,7 @@ vim.keymap.set('n', '<Leader><Leader>s', '<Cmd>PackerSync<CR>', { noremap = true
 -- vim.cmd [[colorscheme everforest]]
 
 -- onedark
-local onedark = require 'onedark'
+--[[ local onedark = require 'onedark'
 onedark.setup {
     style = 'deep',
     transparent = false,
@@ -589,7 +595,11 @@ onedark.setup {
         variables = 'none',
     },
 }
-onedark.load()
+onedark.load() ]]
+
+-- nightfox
+require("nightfox").setup()
+vim.cmd [[colorscheme nightfox]]
 
 -- _ __ ___ (_)___  ___
 -- | '_ ` _ \| / __|/ __|
