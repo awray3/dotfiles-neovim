@@ -38,6 +38,17 @@ require('packer').startup {
         --  \___\___/|_|  \___|
 
         use {
+            '~/.config/nvim/lua/aw',
+            as = "my_config",
+            config = function()
+                --Always run this
+                require 'aw.lsp'
+            end,
+        }
+        use {
+            'folke/neodev.nvim'
+        }
+        use {
             'nvim-treesitter/nvim-treesitter',
             run = ':TSUpdate',
             config = function()
@@ -93,7 +104,7 @@ require('packer').startup {
                     local word_under_cursor = vim.fn.expand '<cword>'
                     local cmd = 'list(' .. word_under_cursor .. '.columns' .. ')'
                     -- might also be {cmd} or {cmd = cmd} if this doesn't work
-                    vim.call('jukit#send#send_to_split', cmd)
+                    vim.fn['jukit#send#send_to_split'](cmd)
                 end -- end df_cols
 
                 -- I want to define my own mappings for things I use. A lot of jukit's commands
@@ -147,7 +158,7 @@ require('packer').startup {
                 if terminal_is_kitty then
                     vim.g.jukit_terminal = 'kitty'
                     vim.g.jukit_output_new_os_window = 1
-                    vim.g.jukit_mpl_style = vim.call('jukit#util#plugin_path', {}) ..
+                    vim.g.jukit_mpl_style = vim.fn['jukit#util#plugin_path']({}) ..
                         '/helpers/matplotlib-backend-kitty/backend.mplstyle'
                     vim.g.jukit_inline_plotting = 1
                 else
@@ -198,15 +209,13 @@ require('packer').startup {
         }
 
         use {
-            "max397574/better-escape.nvim",
+            'max397574/better-escape.nvim',
             config = function()
-                require("better_escape").setup(
-                    {
-                        keys = function()
-                            return vim.api.nvim_win_get_cursor(0)[2] > 1 and '<esc>l' or '<esc>'
-                        end,
-                    }
-                )
+                require('better_escape').setup {
+                    keys = function()
+                        return vim.api.nvim_win_get_cursor(0)[2] > 1 and '<esc>l' or '<esc>'
+                    end,
+                }
             end,
         }
 
@@ -250,6 +259,7 @@ require('packer').startup {
             tag = '*',
             config = function()
                 require('no-neck-pain').setup()
+                vim.keymap.set("n", "<leader>nn", "<Cmd>NoNeckPain<CR>", {silent=true, noremap=true, desc="Toggle no neck pain"})
             end,
         }
         --  _     ____  ____
@@ -543,7 +553,7 @@ vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 -- This will clear things when you hit ESC in normal mode.
 vim.keymap.set('n', '<Esc>', function()
     require('trouble').close()
-    require('notify').dismiss() -- clear notifications
+    require('notify').dismiss({}) -- clear notifications
     vim.cmd.nohlsearch() -- clear highlights
     vim.cmd.echo() -- clear short-message
 end)
@@ -562,7 +572,7 @@ function _G.ReloadConfig()
 
     -- stop all clients.
     vim.notify 'Stopping All Lsp Clients...'
-    vim.lsp.stop_client(vim.lsp.get_active_clients())
+    vim.lsp.stop_client(vim.lsp.get_active_clients(), false)
 
     vim.notify 'Sourcing $NEOHOME/init.lua...'
     dofile(vim.env.MYVIMRC)
@@ -598,7 +608,7 @@ onedark.setup {
 onedark.load() ]]
 
 -- nightfox
-require("nightfox").setup()
+require('nightfox').setup()
 vim.cmd [[colorscheme nightfox]]
 
 -- _ __ ___ (_)___  ___
@@ -643,5 +653,3 @@ function _G.put(...)
     print(table.concat(objects, '\n'))
     return ...
 end
-
-require 'aw.lsp'

@@ -4,7 +4,7 @@
 --| |___ ___) |  __/
 --|_____|____/|_|
 -- anguage erver rotocol
--- tags: LSP, lsp, language server protocos
+-- tags: LSP, lsp, language server protocol
 
 -- general diagnostic configuration
 vim.diagnostic.config {
@@ -24,6 +24,9 @@ require('fidget').setup()
 -- Feel free to add/remove any LSPs that you want here. They will automatically be installed
 local servers = { 'clangd', 'rust_analyzer', 'pyright', 'sumneko_lua' }
 
+-- this needs to come before nvim-lspconfig, which is maybe loaded by mason-lspconfig?
+require('neodev').setup()
+
 -- Ensure the servers above are installed
 require('mason-lspconfig').setup {
     ensure_installed = servers,
@@ -32,42 +35,41 @@ require('mason-lspconfig').setup {
 require 'aw.lsp.null-ls'
 
 for _, lsp in ipairs(servers) do
+    -- sumneko lua handled separately
+    if lsp ~= 'sumneko_lua' then
+        require('lspconfig')[lsp].setup {
+            on_attach = common_lsp_config.on_attach,
+            capabilities = common_lsp_config.capabilities,
+        }
+    elseif lsp == 'sumneko_lua' then
+        -- require the neodev thing?
+        -- Make runtime files discoverable to the server
+        local runtime_path = vim.split(package.path, ';', {})
+        table.insert(runtime_path, 'lua/?.lua')
+        table.insert(runtime_path, 'lua/?/init.lua')
 
-  if lsp ~= 'sumneko_lua' then
-    require('lspconfig')[lsp].setup {
-        on_attach = common_lsp_config.on_attach,
-        capabilities = common_lsp_config.capabilities,
-    }
-  elseif lsp == 'sumneko_lua' then
-    -- Make runtime files discoverable to the server
-    local runtime_path = vim.split(package.path, ';')
-    table.insert(runtime_path, 'lua/?.lua')
-    table.insert(runtime_path, 'lua/?/init.lua')
-
-    require('lspconfig').sumneko_lua.setup {
-        on_attach = common_lsp_config.on_attach,
-        capabilities = common_lsp_config.capabilities,
-        settings = {
-            Lua = {
-                runtime = {
-                    -- Tell the language server which version of Lua you're using (most likely LuaJIT)
-                    version = 'LuaJIT',
-                    -- Setup your lua path
-                    path = runtime_path,
+        require('lspconfig').sumneko_lua.setup {
+            -- on_attach = common_lsp_config.on_attach,
+            -- capabilities = common_lsp_config.capabilities,
+            settings = {
+                Lua = {
+                    -- runtime = {
+                    --     -- Tell the language server which version of Lua you're using (most likely LuaJIT)
+                    --     version = 'LuaJIT',
+                    --     -- Setup your lua path
+                    --     path = runtime_path,
+                    -- },
+                    -- diagnostics = {
+                    --     globals = { 'vim', 'bufnr' },
+                    -- },
+                    -- workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+                    -- Do not send telemetry data containing a randomized but unique identifier
+                    -- telemetry = { enable = false },
                 },
-                diagnostics = {
-                    globals = { 'vim', 'bufnr' },
-                },
-                workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-                -- Do not send telemetry data containing a randomized but unique identifier
-                telemetry = { enable = false },
             },
-        },
-    }
-  end
-
+        }
+    end
 end
-
 
 -- Completion is setup here
 -- nvim-cmp setup
@@ -83,7 +85,7 @@ cmp.setup {
     mapping = cmp.mapping.preset.insert {
         ['<C-d>'] = cmp.mapping.scroll_docs(-4),
         ['<C-f>'] = cmp.mapping.scroll_docs(4),
-        ['<C-Space>'] = cmp.mapping.complete(),
+        ['<C-Space>'] = cmp.mapping.complete({}),
         ['<CR>'] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
