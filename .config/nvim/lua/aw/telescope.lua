@@ -44,7 +44,7 @@ local opts = { noremap = true, silent = true }
 
 telescope.setup {
     defaults = {
-        path_display = { shorten = 2 },
+        path_display = { shorten = 4 },
     },
 
     pickers = {
@@ -56,7 +56,7 @@ telescope.setup {
     },
     extensions = {
         file_browser = {
-            hijack_netrw = false,
+            hijack_netrw = true,
             respect_gitignore = false,
             grouped = true,
             depth = false,

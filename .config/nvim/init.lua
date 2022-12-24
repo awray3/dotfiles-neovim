@@ -1,13 +1,8 @@
---  _       _ _     _
+--  _       _ _     _   
 -- (_)_ __ (_) |_  | |_   _  __ _
 -- | | '_ \| | __| | | | | |/ _` |
 -- | | | | | | |_  | | |_| | (_| |
 -- |_|_| |_|_|\__(_)_|\__,_|\__,_|
-
--- per the nvim-tree docs, this should come at the very top of the neovim configuration
--- to avoid race conditions with netrw
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
 
 -- bootstrap and setup packer
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
@@ -26,7 +21,50 @@ end
 -- |_|   |_|\__,_|\__, |_|_| |_|___/
 --                |___/
 
+-- this is inherited from the launching process
 local terminal_is_kitty = vim.env.TERM == 'xterm-kitty'
+local is_neovide = vim.fn.exists(vim.g.neovide)
+
+if is_neovide then
+    vim.notify 'Loading in Neovide Mode!'
+    terminal_is_kitty = false
+
+    -- Neovide-related settings
+
+    -- Set the font for neovide's sake
+    vim.opt.guifont = 'CaskaydiaCove Nerd Font Mono,Monaco:h16'
+
+    -- scale: great for zooming in/out
+    vim.g.neovide_scale_factor = 1.0
+
+    function _G.change_scale_factor(amount)
+        -- use positive for increasing, negative for decreasing
+        vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + amount
+    end
+
+    vim.keymap.set('n', '<C-=>', '<Cmd>lua change_scale_factor(0.05)<cr>',
+        { noremap = true, silent = true, desc = 'Increase scale' })
+    vim.keymap.set('n', '<C-->', '<Cmd>lua change_scale_factor(-0.05)<cr>',
+        { noremap = true, silent = true, desc = 'Increase scale' })
+
+    -- g:neovide_transparency should be 0 if you want to unify transparency of content and title bar.
+    vim.g.neovide_transparency = 0.85
+    vim.g.transparency = 0.1
+
+    vim.g.neovide_floating_blur_amount_x = 4.0
+    vim.g.neovide_floating_blur_amount_y = 4.0
+    vim.g.neovide_remember_window_size = 1
+    vim.g.neovide_cursor_vfx_mode = "pixiedust"
+    vim.g.neovide_cursor_vfx_particle_lifetime = 4
+    vim.g.neovide_cursor_vfx_particle_density = 40
+    vim.g.neovide_cursor_vfx_particle_speed = 15.0
+
+
+elseif terminal_is_kitty then
+    vim.notify 'Launching in Kitty Mode!'
+else
+    vim.notify 'Launching in Standard Mode!'
+end
 
 require('packer').startup {
     function(use)
@@ -39,14 +77,15 @@ require('packer').startup {
 
         use {
             '~/.config/nvim/lua/aw',
-            as = "my_config",
+            as = 'my_config',
+            opt = false,
             config = function()
                 --Always run this
                 require 'aw.lsp'
             end,
         }
         use {
-            'folke/neodev.nvim'
+            'folke/neodev.nvim',
         }
         use {
             'nvim-treesitter/nvim-treesitter',
@@ -56,8 +95,13 @@ require('packer').startup {
             end,
         }
         -- Additional textobjects for treesitter
-        use 'nvim-treesitter/nvim-treesitter-textobjects'
-        use 'nvim-treesitter/playground'
+        use {
+            'nvim-treesitter/nvim-treesitter-textobjects',
+            opt = true,
+        }
+
+        -- plugin for inspecting treesitter
+        use { 'nvim-treesitter/playground', opt = true }
 
         use {
             'nvim-telescope/telescope.nvim',
@@ -66,11 +110,18 @@ require('packer').startup {
                 require 'aw.telescope'
             end,
         }
+
+        -- This uses a c implementation of fzf for telescope.
+        -- Very fast searching
         use {
             'nvim-telescope/telescope-fzf-native.nvim',
             run = 'make',
         }
         use { 'nvim-telescope/telescope-file-browser.nvim' }
+
+        -- Plugin for interfacing with Github issues/PRs/etc
+        -- with a telescope selector
+        -- Something about Github and octopi?
         use {
             'pwntester/octo.nvim',
             requires = {
@@ -78,11 +129,13 @@ require('packer').startup {
                 'nvim-telescope/telescope.nvim',
                 'kyazdani42/nvim-web-devicons',
             },
+            opt = true,
             config = function()
                 require 'aw.octo'
             end,
-            -- Notes: this is for adding Github issues to my telescope selector
         }
+
+        -- a simple, flip open and close terminal just like vscode has.
         use {
             's1n7ax/nvim-terminal',
             config = function()
@@ -91,10 +144,9 @@ require('packer').startup {
                     toggle_keymap = '<leader>j',
                 }
             end,
-            -- a simple, flip open and close terminal just like vscode has.
         }
+
         -- repl plugin
-        -- Options are: iron.nvim, vim-jukit
         use {
             'luk400/vim-jukit',
             ft = { 'julia', 'python' },
@@ -158,7 +210,7 @@ require('packer').startup {
                 if terminal_is_kitty then
                     vim.g.jukit_terminal = 'kitty'
                     vim.g.jukit_output_new_os_window = 1
-                    vim.g.jukit_mpl_style = vim.fn['jukit#util#plugin_path']({}) ..
+                    vim.g.jukit_mpl_style = vim.fn['jukit#util#plugin_path'] {} ..
                         '/helpers/matplotlib-backend-kitty/backend.mplstyle'
                     vim.g.jukit_inline_plotting = 1
                 else
@@ -169,7 +221,9 @@ require('packer').startup {
         }
 
         use 'tpope/vim-surround'
-        use 'tpope/vim-sleuth' -- Detect tabstop and shiftwidth automatically
+
+        -- Detect tabstop and shiftwidth automatically
+        use 'tpope/vim-sleuth'
 
         use {
             'numToStr/Comment.nvim',
@@ -208,6 +262,7 @@ require('packer').startup {
             end, -- end comment.nvim configuration
         }
 
+        -- makes jk and jj work better
         use {
             'max397574/better-escape.nvim',
             config = function()
@@ -219,10 +274,13 @@ require('packer').startup {
             end,
         }
 
-        if terminal_is_kitty then
-            use 'knubie/vim-kitty-navigator'
-        end
+        use {
+            'knubie/vim-kitty-navigator',
+            opt = not terminal_is_kitty,
+            -- integration with kitty terminal
+        }
 
+        -- makes parenthesis matching better
         use {
             'windwp/nvim-autopairs',
             config = function()
@@ -242,24 +300,23 @@ require('packer').startup {
             end,
         }
 
-        -- Lua
+        -- A nice way to view diagnostics and workspace problems
         use {
             'folke/trouble.nvim',
             requires = 'kyazdani42/nvim-web-devicons',
             config = function()
-                require('trouble').setup {
-                    -- your configuration comes here
-                    -- or leave it empty to use the default settings
-                    -- refer to the configuration section below
-                }
+                require('trouble').setup {}
             end,
         }
+
+        -- Nice centering
         use {
             'shortcuts/no-neck-pain.nvim',
             tag = '*',
             config = function()
                 require('no-neck-pain').setup()
-                vim.keymap.set("n", "<leader>nn", "<Cmd>NoNeckPain<CR>", {silent=true, noremap=true, desc="Toggle no neck pain"})
+                vim.keymap.set('n', '<leader>nn', '<Cmd>NoNeckPain<CR>',
+                    { silent = true, noremap = true, desc = 'Toggle no neck pain' })
             end,
         }
         --  _     ____  ____
@@ -302,7 +359,11 @@ require('packer').startup {
         --  \___/|___|
 
         -- colorschemes
+
+        -- base nightfox.
+        -- More to be ported in.
         use 'EdenEast/nightfox.nvim'
+
         use {
             'sainnhe/everforest',
             config = function()
@@ -315,7 +376,7 @@ require('packer').startup {
         -- use 'safv12/andromeda.vim'
         use 'navarasu/onedark.nvim'
 
-        -- lines
+        -- Nice bottom-line
         use {
             'nvim-lualine/lualine.nvim',
             requires = {
@@ -327,6 +388,8 @@ require('packer').startup {
             end,
         }
 
+        -- Tints non-focused buffers, making it easier
+        -- to identify the currently active buffer
         use {
             'levouh/tint.nvim',
             config = function()
@@ -334,6 +397,7 @@ require('packer').startup {
             end,
         }
 
+        -- Nice top line
         use {
             'kdheepak/tabline.nvim',
             config = function()
@@ -357,6 +421,7 @@ require('packer').startup {
             end,
         }
 
+        -- syntax for justfiles
         use { 'NoahTheDuke/vim-just', ft = { 'just' } }
 
         --              _
@@ -365,6 +430,8 @@ require('packer').startup {
         -- | | | | (_) | ||  __/\__ \
         -- |_| |_|\___/ \__\___||___/
 
+        -- main plugin for Quarto.
+        -- https://quarto.org/
         use {
             'quarto-dev/quarto-nvim',
             requires = { 'neovim/nvim-lspconfig' },
@@ -389,13 +456,17 @@ require('packer').startup {
                 }
             end,
         }
+
+        -- If you need a quick Markdown Viewer
         use {
             'iamcco/markdown-preview.nvim',
             run = function()
                 vim.fn['mkdp#util#install']()
             end,
-            ft = { 'markdown', 'vimwiki' },
+            ft = { 'markdown', 'vimwiki', 'quarto' },
         }
+
+        -- Great for quick notes or journaling
         use {
             'vimwiki/vimwiki',
 
@@ -424,6 +495,9 @@ require('packer').startup {
             require('packer').sync()
         end
     end,
+
+    -- this makes packer display as a floating window instead
+    -- of a buffer to the side.
     config = {
         display = {
             open_fn = require('packer.util').float,
@@ -553,7 +627,7 @@ vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { noremap = true })
 -- This will clear things when you hit ESC in normal mode.
 vim.keymap.set('n', '<Esc>', function()
     require('trouble').close()
-    require('notify').dismiss({}) -- clear notifications
+    require('notify').dismiss {} -- clear notifications
     vim.cmd.nohlsearch() -- clear highlights
     vim.cmd.echo() -- clear short-message
 end)
