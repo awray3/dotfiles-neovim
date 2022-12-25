@@ -1,10 +1,16 @@
---  _       _ _     _   
+--  _       _ _     _
 -- (_)_ __ (_) |_  | |_   _  __ _
 -- | | '_ \| | __| | | | | |/ _` |
 -- | | | | | | |_  | | |_| | (_| |
 -- |_|_| |_|_|\__(_)_|\__,_|\__,_|
 
 -- bootstrap and setup packer
+--
+--
+vim.cmd [[
+    let g:jukit_mappings=0
+]]
+
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 local is_bootstrap = false
 
@@ -54,12 +60,10 @@ if is_neovide then
     vim.g.neovide_floating_blur_amount_x = 4.0
     vim.g.neovide_floating_blur_amount_y = 4.0
     vim.g.neovide_remember_window_size = 1
-    vim.g.neovide_cursor_vfx_mode = "pixiedust"
+    vim.g.neovide_cursor_vfx_mode = 'pixiedust'
     vim.g.neovide_cursor_vfx_particle_lifetime = 4
     vim.g.neovide_cursor_vfx_particle_density = 40
     vim.g.neovide_cursor_vfx_particle_speed = 15.0
-
-
 elseif terminal_is_kitty then
     vim.notify 'Launching in Kitty Mode!'
 else
@@ -151,6 +155,12 @@ require('packer').startup {
             'luk400/vim-jukit',
             ft = { 'julia', 'python' },
             config = function()
+                -- I want to define my own mappings for things I use. A lot of jukit's commands
+                -- overwrite stuff I use.
+                vim.cmd [[
+                    let g:jukit_mappings_ext_enabled = ""
+                ]]
+
                 -- function for getting the column names of the dataframe
                 function _G.df_columns()
                     local word_under_cursor = vim.fn.expand '<cword>'
@@ -158,10 +168,6 @@ require('packer').startup {
                     -- might also be {cmd} or {cmd = cmd} if this doesn't work
                     vim.fn['jukit#send#send_to_split'](cmd)
                 end -- end df_cols
-
-                -- I want to define my own mappings for things I use. A lot of jukit's commands
-                -- overwrite stuff I use.
-                vim.g.jukit_mappings = 0
 
                 local jukit_map = function(lhs, rhs, desc, mode)
                     mode = mode or 'n'
@@ -207,7 +213,7 @@ require('packer').startup {
                 -- send all cells
                 jukit_map('<Leader>all', ':call jukit#send#all()<cr>', 'Send all cells')
 
-                if terminal_is_kitty then
+                if terminal_is_kitty and not is_neovide then
                     vim.g.jukit_terminal = 'kitty'
                     vim.g.jukit_output_new_os_window = 1
                     vim.g.jukit_mpl_style = vim.fn['jukit#util#plugin_path'] {} ..
@@ -219,6 +225,9 @@ require('packer').startup {
                 end -- endif
             end, -- end jukit configuration
         }
+
+        -- debugging
+        use { 'mfussenegger/nvim-dap', ft = { 'python', 'java' }, opt = true }
 
         use 'tpope/vim-surround'
 
@@ -276,7 +285,7 @@ require('packer').startup {
 
         use {
             'knubie/vim-kitty-navigator',
-            opt = not terminal_is_kitty,
+            cond = terminal_is_kitty,
             -- integration with kitty terminal
         }
 
