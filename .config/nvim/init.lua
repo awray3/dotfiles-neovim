@@ -23,7 +23,7 @@ end
 
 -- this is inherited from the launching process
 local terminal_is_kitty = vim.env.TERM == 'xterm-kitty'
-local is_neovide = vim.fn.exists(vim.g.neovide)
+local is_neovide = vim.g.neovide
 
 if is_neovide then
     vim.notify 'Loading in Neovide Mode!'
