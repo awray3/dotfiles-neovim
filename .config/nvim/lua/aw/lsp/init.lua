@@ -25,7 +25,6 @@ require('fidget').setup()
 local servers = { 'clangd', 'rust_analyzer', 'pyright', 'sumneko_lua' }
 
 -- this needs to come before nvim-lspconfig, which is maybe loaded by mason-lspconfig?
-require('neodev').setup()
 
 -- Ensure the servers above are installed
 require('mason-lspconfig').setup {
@@ -42,29 +41,32 @@ for _, lsp in ipairs(servers) do
             capabilities = common_lsp_config.capabilities,
         }
     elseif lsp == 'sumneko_lua' then
-        -- require the neodev thing?
         -- Make runtime files discoverable to the server
         local runtime_path = vim.split(package.path, ';', {})
         table.insert(runtime_path, 'lua/?.lua')
         table.insert(runtime_path, 'lua/?/init.lua')
 
+        local lua_ls_on_attach = function (client, bufnr)
+          common_lsp_config.on_attach(client, bufnr)
+          client.server_capabilities.document_formatting = false
+          client.server_capabilities.document_range_formatting = false
+        end
+
         require('lspconfig').sumneko_lua.setup {
-            -- on_attach = common_lsp_config.on_attach,
-            -- capabilities = common_lsp_config.capabilities,
+            on_attach = lua_ls_on_attach,
+            capabilities = common_lsp_config.capabilities,
             settings = {
                 Lua = {
-                    -- runtime = {
-                    --     -- Tell the language server which version of Lua you're using (most likely LuaJIT)
-                    --     version = 'LuaJIT',
-                    --     -- Setup your lua path
-                    --     path = runtime_path,
-                    -- },
-                    -- diagnostics = {
-                    --     globals = { 'vim', 'bufnr' },
-                    -- },
-                    -- workspace = { library = vim.api.nvim_get_runtime_file('', true) },
-                    -- Do not send telemetry data containing a randomized but unique identifier
-                    -- telemetry = { enable = false },
+                    runtime = {
+                        -- Tell the language server which version of Lua you're using (most likely LuaJIT)
+                        version = 'LuaJIT',
+                        -- Setup your lua path
+                        path = runtime_path,
+                    },
+                    diagnostics = {
+                        globals = { 'vim', 'bufnr' },
+                    },
+                    telemetry = { enable = false },
                 },
             },
         }

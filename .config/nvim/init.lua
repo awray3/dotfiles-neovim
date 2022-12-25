@@ -475,6 +475,22 @@ require('packer').startup {
             ft = { 'markdown', 'vimwiki', 'quarto' },
         }
 
+        use {
+            'famiu/bufdelete.nvim',
+            config = function()
+                vim.keymap.set('n',
+                    '<Leader>q',
+                    function()
+                        require('bufdelete').bufdelete(0, true)
+                end,
+            {
+                noremap = true,
+                silent = true,
+            }
+                )
+            end,
+        }
+
         -- Great for quick notes or journaling
         use {
             'vimwiki/vimwiki',
