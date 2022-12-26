@@ -89,9 +89,6 @@ require('packer').startup {
             end,
         }
         use {
-            'folke/neodev.nvim',
-        }
-        use {
             'nvim-treesitter/nvim-treesitter',
             run = ':TSUpdate',
             config = function()
