@@ -67,6 +67,7 @@ for _, lsp in ipairs(servers) do
           },
           workspace = {
             library = vim.api.nvim_get_runtime_file('', true),
+            checkThirdParty = false
           },
           completion = {
             enable = true,
