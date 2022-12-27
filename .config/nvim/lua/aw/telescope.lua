@@ -72,9 +72,8 @@ pcall(telescope.load_extension, 'file_browser')
 
 vim.keymap.set('n', "<leader>in", "<Cmd>e $NEOHOME/init.lua<CR> <Cmd>cd $NEOHOME<CR>", opts)
 vim.keymap.set('n', "<leader>iz", "<Cmd>e $ZSH/zshrc.zsh<CR> <Cmd>cd $ZSH<CR>", opts)
-vim.keymap.set('n', '<C-n>', '<Cmd>Telescope file_browser<CR>', opts)
+--vim.keymap.set('n', '<C-n>', '<Cmd>Telescope file_browser<CR>', opts)
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
-vim.keymap.set('n', '<leader>gb', require('telescope.builtin').buffers, { desc = '[fb] [f]ind existing [b]uffers' })
 
 vim.keymap.set('n', '<leader>/', function()
     -- You can pass additional configuration to telescope to change theme, layout, etc.
