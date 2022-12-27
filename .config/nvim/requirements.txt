@@ -1,0 +1,4 @@
+pynvim
+jupyter_client
+debugpy
+rich

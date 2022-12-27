@@ -1,4 +1,10 @@
-require('tabline').setup {
+local M = {
+    'kdheepak/tabline.nvim',
+    event = 'VeryLazy',
+    enabled = false
+}
+
+M.config = {
     -- Defaults configuration options
     enable = true,
     options = {
@@ -14,7 +20,12 @@ require('tabline').setup {
         show_tabs_only = false, -- this shows only tabs instead of tabs + buffers
     },
 }
+
 vim.cmd [[
 set guioptions-=e " Use showtabline in gui vim
+
+" I might try disabling this.
 set sessionoptions+=tabpages,globals " store tabpages and globals in session
 ]]
+
+return M

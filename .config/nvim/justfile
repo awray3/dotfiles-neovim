@@ -1,0 +1,11 @@
+# Will create a python environment from the pyproject.toml file.
+setup-python:
+    #!/usr/bin/env /bin/bash
+    pypath=$(which python)
+    echo "Spawning new Neovim venv with python using $pypath"
+
+    python -m venv .venv
+    source .venv/bin/activate
+
+    pip install --upgrade pip
+    pip install -r requirements.txt
